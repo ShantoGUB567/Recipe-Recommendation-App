@@ -10,7 +10,6 @@ class AppTheme {
     colorScheme: ColorScheme.light(
       primary: AppColors.lightPrimary,
       secondary: AppColors.lightSecondary,
-      background: AppColors.lightBackground,
       surface: AppColors.lightSurface,
     ),
     cardColor: AppColors.lightSurface,
@@ -43,9 +42,7 @@ class AppTheme {
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.lightPrimary,
         foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         elevation: 4,
         shadowColor: AppColors.lightShadow,
         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -60,7 +57,6 @@ class AppTheme {
     colorScheme: ColorScheme.dark(
       primary: AppColors.darkPrimary,
       secondary: AppColors.darkSecondary,
-      background: AppColors.darkBackground,
       surface: AppColors.darkSurface,
     ),
     cardColor: AppColors.darkSurface,
@@ -93,9 +89,7 @@ class AppTheme {
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.darkPrimary,
         foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         elevation: 4,
         shadowColor: AppColors.darkShadow,
         padding: const EdgeInsets.symmetric(vertical: 14),

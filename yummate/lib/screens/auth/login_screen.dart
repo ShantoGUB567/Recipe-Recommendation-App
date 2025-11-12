@@ -14,8 +14,6 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -40,13 +38,14 @@ class LoginScreen extends StatelessWidget {
             children: [
               // const SizedBox(height: 20),
 
-              // 🍔 App Logo or Emoji
-              CircleAvatar(
-                radius: 40,
-                backgroundColor: isDark ? Colors.orange[200] : Colors.orange[50],
-                child: const Text(
-                  "🍴",
-                  style: TextStyle(fontSize: 36),
+              // App Logo
+              ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Image.asset(
+                  'assets/images/logo.jpg',
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
                 ),
               ),
 
@@ -63,11 +62,9 @@ class LoginScreen extends StatelessWidget {
               Text(
                 "Welcome back, foodie!",
                 style: TextStyle(
-                  color: Theme.of(context)
-                      .textTheme
-                      .bodyMedium!
-                      .color!
-                      .withOpacity(0.7),
+                  color: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium!.color!.withOpacity(0.7),
                 ),
               ),
 
@@ -96,9 +93,7 @@ class LoginScreen extends StatelessWidget {
                   onPressed: () {},
                   child: const Text(
                     "Forgot Password?",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.w500),
                   ),
                 ),
               ),
@@ -127,11 +122,9 @@ class LoginScreen extends StatelessWidget {
                   Text(
                     "Don’t have an account?",
                     style: TextStyle(
-                      color: Theme.of(context)
-                          .textTheme
-                          .bodyMedium!
-                          .color!
-                          .withOpacity(0.7),
+                      color: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium!.color!.withOpacity(0.7),
                     ),
                   ),
                   TextButton(

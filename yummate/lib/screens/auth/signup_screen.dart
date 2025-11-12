@@ -15,12 +15,10 @@ class SignupScreen extends StatelessWidget {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
-  TextEditingController();
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -44,13 +42,14 @@ class SignupScreen extends StatelessWidget {
             children: [
               const SizedBox(height: 20),
 
-              // 🍔 App Logo or Emoji
-              CircleAvatar(
-                radius: 40,
-                backgroundColor: isDark ? Colors.orange[200] : Colors.orange[50],
-                child: const Text(
-                  "🍴",
-                  style: TextStyle(fontSize: 36),
+              // App Logo
+              ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Image.asset(
+                  'assets/images/logo.jpg',
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
                 ),
               ),
 
@@ -67,11 +66,9 @@ class SignupScreen extends StatelessWidget {
               Text(
                 "Join Yummate and start cooking!",
                 style: TextStyle(
-                  color: Theme.of(context)
-                      .textTheme
-                      .bodyMedium!
-                      .color!
-                      .withOpacity(0.7),
+                  color: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium!.color!.withOpacity(0.7),
                 ),
               ),
 
@@ -147,11 +144,9 @@ class SignupScreen extends StatelessWidget {
                   Text(
                     "Already have an account?",
                     style: TextStyle(
-                      color: Theme.of(context)
-                          .textTheme
-                          .bodyMedium!
-                          .color!
-                          .withOpacity(0.7),
+                      color: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium!.color!.withOpacity(0.7),
                     ),
                   ),
                   TextButton(

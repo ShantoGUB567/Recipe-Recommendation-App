@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yummate/core/theme/app_theme.dart';
 import 'package:yummate/core/theme/theme_controller.dart';
-import 'package:yummate/screens/auth/login_screen.dart';
+import 'package:yummate/screens/onboarding/onboarding_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,18 +16,20 @@ class MyApp extends StatelessWidget {
     // Put ThemeController into GetX dependency system
     final ThemeController themeController = Get.put(ThemeController());
 
-    return Obx(() => GetMaterialApp(
-      title: 'Yummate',
-      debugShowCheckedModeBanner: false,
+    return Obx(
+      () => GetMaterialApp(
+        title: 'Yummate',
+        debugShowCheckedModeBanner: false,
 
-      // Use GetX reactive theme switching
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: themeController.isDarkMode.value
-          ? ThemeMode.dark
-          : ThemeMode.light,
+        // Use GetX reactive theme switching
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: themeController.isDarkMode.value
+            ? ThemeMode.dark
+            : ThemeMode.light,
 
-      home: LoginScreen(),
-    ));
+        home: const OnboardingScreen(),
+      ),
+    );
   }
 }
