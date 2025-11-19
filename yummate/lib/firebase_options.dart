@@ -2,7 +2,8 @@
 // ignore_for_file: type=lint
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
-    show defaultTargetPlatform, kIsWeb, TargetPlatform;
+  show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -46,8 +47,8 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDtGWNuQn5e9uqvrwQcA8P4mMaqCDYUxL4',
+  static FirebaseOptions get android => FirebaseOptions(
+    apiKey: dotenv.env['ANDROID_API_KEY'] ?? '',
     appId: '1:31486191012:android:fc03f8fd7a00d110284d31',
     messagingSenderId: '31486191012',
     projectId: 'yummate-8e30b',
@@ -55,8 +56,8 @@ class DefaultFirebaseOptions {
     storageBucket: 'yummate-8e30b.firebasestorage.app',
   );
 
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyA-WBSVfc0PQr7dfuIDQ2Cw3QqOF3bqVz4',
+  static FirebaseOptions get ios => FirebaseOptions(
+    apiKey: dotenv.env['IOS_API_KEY'] ?? '',
     appId: '1:31486191012:ios:04a71c8217673f95284d31',
     messagingSenderId: '31486191012',
     projectId: 'yummate-8e30b',
@@ -65,8 +66,8 @@ class DefaultFirebaseOptions {
     iosBundleId: 'com.example.yummate',
   );
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDSkrQL5nRv4zqVtHcR3-K4dfFCUiV0A0g',
+  static FirebaseOptions get web => FirebaseOptions(
+    apiKey: dotenv.env['WEB_API_KEY'] ?? '',
     appId: '1:31486191012:web:a7764efc5ced2eb3284d31',
     messagingSenderId: '31486191012',
     projectId: 'yummate-8e30b',

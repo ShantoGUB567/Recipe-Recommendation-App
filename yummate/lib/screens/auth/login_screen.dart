@@ -32,7 +32,7 @@ class LoginScreen extends StatelessWidget {
       );
 
       // SUCCESS → Go to HomeScreen
-      Get.offAll(() => HomeScreen());
+      // Get.offAll(() => HomeScreen());
 
       Get.snackbar("Success", "Login successful!");
     } catch (e) {
@@ -115,7 +115,31 @@ class LoginScreen extends StatelessWidget {
 
               PrimaryButton(
                 text: "Login",
-                onPressed: loginUser,
+                onPressed: () async {
+                  try {
+                    final auth = FirebaseAuth.instance;
+
+                    final userCredential = await auth.signInWithEmailAndPassword(
+                      email: emailController.text.trim(),
+                      password: passwordController.text.trim(),
+                    );
+
+                    final user = userCredential.user;
+
+                    // displayName null hole email er first part use hobe
+                    final String name =
+                        user?.displayName ?? user?.email?.split('@')[0] ?? "Foodie";
+
+                    Get.offAll(() => HomeScreen(userName: name));
+                  } catch (e) {
+                    Get.snackbar(
+                      "Login Failed",
+                      e.toString(),
+                      snackPosition: SnackPosition.BOTTOM,
+                    );
+                  }
+                }
+                // onPressed: loginUser,
               ),
 
               const SizedBox(height: 20),
