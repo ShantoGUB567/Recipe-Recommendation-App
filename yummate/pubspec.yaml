@@ -16,6 +16,9 @@ dependencies:
   get: ^4.7.2
   video_player: ^2.9.2
   flutter_animate: ^4.5.0
+  firebase_core: ^3.0.0
+  firebase_auth: ^5.0.0
+  firebase_database: ^11.0.0
 
 dev_dependencies:
   flutter_test:

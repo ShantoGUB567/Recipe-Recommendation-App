@@ -4,6 +4,8 @@ import 'package:yummate/core/theme/theme_controller.dart';
 import 'package:yummate/core/widgets/custom_text_field.dart';
 import 'package:yummate/core/widgets/primary_button.dart';
 import 'package:yummate/screens/auth/signup_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:yummate/screens/features/home_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
@@ -11,6 +13,32 @@ class LoginScreen extends StatelessWidget {
   final ThemeController themeController = Get.find<ThemeController>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
+  Future<void> loginUser() async {
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      Get.snackbar("Error", "Email & password required");
+      return;
+    }
+
+    try {
+      await auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // SUCCESS → Go to HomeScreen
+      Get.offAll(() => HomeScreen());
+
+      Get.snackbar("Success", "Login successful!");
+    } catch (e) {
+      Get.snackbar("Login Failed", e.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +64,6 @@ class LoginScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // const SizedBox(height: 20),
-
-              // App Logo
               ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: Image.asset(
@@ -58,19 +83,9 @@ class LoginScreen extends StatelessWidget {
                   letterSpacing: 1,
                 ),
               ),
-              const SizedBox(height: 6),
-              Text(
-                "Welcome back, foodie!",
-                style: TextStyle(
-                  color: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium!.color!.withOpacity(0.7),
-                ),
-              ),
 
               const SizedBox(height: 40),
 
-              // 🥞 Email TextField
               CustomTextField(
                 hintText: "Email",
                 controller: emailController,
@@ -78,7 +93,6 @@ class LoginScreen extends StatelessWidget {
                 prefixIcon: Icons.email_rounded,
               ),
 
-              // 🍳 Password TextField
               CustomTextField(
                 hintText: "Password",
                 controller: passwordController,
@@ -86,7 +100,6 @@ class LoginScreen extends StatelessWidget {
                 prefixIcon: Icons.lock_rounded,
               ),
 
-              // Forgot Password
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
@@ -100,36 +113,28 @@ class LoginScreen extends StatelessWidget {
 
               const SizedBox(height: 10),
 
-              // 🍕 Login Button
               PrimaryButton(
                 text: "Login",
-                onPressed: () {
-                  // TODO: Implement login functionality
-                  Get.snackbar(
-                    "Login",
-                    "Attempting to log in...",
-                    snackPosition: SnackPosition.BOTTOM,
-                  );
-                },
+                onPressed: loginUser,
               ),
 
               const SizedBox(height: 20),
 
-              // Signup Text
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     "Don’t have an account?",
                     style: TextStyle(
-                      color: Theme.of(
-                        context,
-                      ).textTheme.bodyMedium!.color!.withOpacity(0.7),
+                      color: Theme.of(context)
+                          .textTheme
+                          .bodyMedium!
+                          .color!
+                          .withOpacity(0.7),
                     ),
                   ),
                   TextButton(
                     onPressed: () {
-                      // Navigate to signup screen
                       Get.to(() => SignupScreen());
                     },
                     child: const Text(

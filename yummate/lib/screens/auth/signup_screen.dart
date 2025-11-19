@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 import 'package:yummate/core/theme/theme_controller.dart';
 import 'package:yummate/core/widgets/custom_text_field.dart';
 import 'package:yummate/core/widgets/primary_button.dart';
+import 'package:yummate/screens/auth/login_screen.dart';
 
 class SignupScreen extends StatelessWidget {
   SignupScreen({super.key});
@@ -15,12 +19,75 @@ class SignupScreen extends StatelessWidget {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
-      TextEditingController();
+  TextEditingController();
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final DatabaseReference dbRef =
+  FirebaseDatabase.instance.ref().child("users");
+
+  Future<void> signupUser() async {
+    String name = nameController.text.trim();
+    String username = usernameController.text.trim();
+    String email = emailController.text.trim();
+    String phone = phoneController.text.trim();
+    String password = passwordController.text.trim();
+    String confirmPassword = confirmPasswordController.text.trim();
+
+    if (name.isEmpty ||
+        username.isEmpty ||
+        email.isEmpty ||
+        phone.isEmpty ||
+        password.isEmpty ||
+        confirmPassword.isEmpty) {
+      Get.snackbar("Error", "All fields are required!",
+          snackPosition: SnackPosition.BOTTOM);
+      return;
+    }
+
+    if (password != confirmPassword) {
+      Get.snackbar("Error", "Passwords do not match!",
+          snackPosition: SnackPosition.BOTTOM);
+      return;
+    }
+
+    try {
+      // ✅ Create user in Firebase Auth
+      UserCredential userCredential =
+      await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      String uid = userCredential.user!.uid;
+
+      // ✅ Save additional user data in Realtime DB
+      await dbRef.child(uid).set({
+        "name": name,
+        "username": username,
+        "email": email,
+        "phone": phone,
+        "uid": uid,
+      });
+
+      Get.snackbar("Success", "Account created successfully!",
+          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.green);
+
+      Get.off(() => LoginScreen());
+    } on FirebaseAuthException catch (e) {
+      // Show structured auth error code and message
+      Get.snackbar("Signup Failed", "${e.code}: ${e.message}",
+          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red);
+    } catch (e) {
+      Get.snackbar("Signup Failed", e.toString(),
+          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         elevation: 0,
         backgroundColor: Colors.transparent,
         actions: [
@@ -40,9 +107,6 @@ class SignupScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 20),
-
-              // App Logo
               ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: Image.asset(
@@ -74,21 +138,18 @@ class SignupScreen extends StatelessWidget {
 
               const SizedBox(height: 30),
 
-              // 🥞 Full Name
               CustomTextField(
                 hintText: "Full Name",
                 controller: nameController,
                 prefixIcon: Icons.person_rounded,
               ),
 
-              // Username
               CustomTextField(
                 hintText: "Username",
                 controller: usernameController,
                 prefixIcon: Icons.account_circle_rounded,
               ),
 
-              // Email
               CustomTextField(
                 hintText: "Email",
                 controller: emailController,
@@ -96,7 +157,6 @@ class SignupScreen extends StatelessWidget {
                 prefixIcon: Icons.email_rounded,
               ),
 
-              // Phone
               CustomTextField(
                 hintText: "Phone",
                 controller: phoneController,
@@ -104,7 +164,6 @@ class SignupScreen extends StatelessWidget {
                 prefixIcon: Icons.phone_rounded,
               ),
 
-              // Password
               CustomTextField(
                 hintText: "Password",
                 controller: passwordController,
@@ -112,7 +171,6 @@ class SignupScreen extends StatelessWidget {
                 prefixIcon: Icons.lock_rounded,
               ),
 
-              // Confirm Password
               CustomTextField(
                 hintText: "Confirm Password",
                 controller: confirmPasswordController,
@@ -122,22 +180,13 @@ class SignupScreen extends StatelessWidget {
 
               const SizedBox(height: 10),
 
-              // 🍕 Create Account Button
               PrimaryButton(
                 text: "Create Account",
-                onPressed: () {
-                  // TODO: Implement signup functionality
-                  Get.snackbar(
-                    "Signup",
-                    "Creating your account...",
-                    snackPosition: SnackPosition.BOTTOM,
-                  );
-                },
+                onPressed: signupUser, // ⬅ Firebase Signup Function
               ),
 
               const SizedBox(height: 20),
 
-              // Login Text
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -150,10 +199,7 @@ class SignupScreen extends StatelessWidget {
                     ),
                   ),
                   TextButton(
-                    onPressed: () {
-                      // Navigate back to login screen
-                      Get.back();
-                    },
+                    onPressed: () => Get.to(() => LoginScreen()),
                     child: const Text(
                       "Login",
                       style: TextStyle(fontWeight: FontWeight.bold),
@@ -168,3 +214,13 @@ class SignupScreen extends StatelessWidget {
     );
   }
 }
+
+
+// Variant: debugAndroidTest
+// Config: debug
+// Store: C:\Users\alsha\.android\debug.keystore
+// Alias: AndroidDebugKey
+// MD5: A0:D2:3B:08:29:06:02:20:50:0B:03:53:65:7B:01:3B
+// SHA1: A7:EA:70:22:5D:1F:93:E2:61:E4:2E:75:CD:6C:78:43:AF:68:1C:8E
+// SHA-256: 02:BF:B5:9C:DD:94:DB:EE:41:5B:F0:CF:41:8D:56:9D:5C:60:F4:43:2E:C9:71:59:E7:DF:D4:84:95:46:C3:9A
+// Valid until: Tuesday, July 7, 2054

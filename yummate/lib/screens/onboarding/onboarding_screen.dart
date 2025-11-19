@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:yummate/screens/auth/login_screen.dart';
+import 'package:get/get.dart';
+import 'package:yummate/screens/auth/signup_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -133,11 +135,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           child:
                               ElevatedButton(
                                     onPressed: () {
-                                      // Navigate to next screen
-                                      // Navigator.pushReplacement(
-                                      //   context,
-                                      //   MaterialPageRoute(builder: (context) => HomeScreen()),
-                                      // );
+                                      // Navigate to login screen
+                                      Get.to(() => LoginScreen());
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.orange.shade700,
@@ -181,12 +180,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => LoginScreen(),
-                                      ),
-                                    );
+                                    // Navigate to signup screen
+                                    Get.to(() => SignupScreen());
                                   },
                                   child: const Text(
                                     'Sign In.',

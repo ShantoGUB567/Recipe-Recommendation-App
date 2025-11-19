@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "31486191012",
+    "firebase_url": "https://yummate-8e30b-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "yummate-8e30b",
+    "storage_bucket": "yummate-8e30b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:31486191012:android:fc03f8fd7a00d110284d31",
+        "android_client_info": {
+          "package_name": "com.example.yummate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtGWNuQn5e9uqvrwQcA8P4mMaqCDYUxL4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
