@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SavedRecipesScreen extends StatelessWidget {
-  const SavedRecipesScreen({Key? key}) : super(key: key);
+  const SavedRecipesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,10 @@ class SavedRecipesScreen extends StatelessWidget {
                 final item = saved[index];
                 return Card(
                   child: ListTile(
-                    leading: CircleAvatar(backgroundColor: Colors.orange.shade100, child: const Icon(Icons.bookmark)),
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.orange.shade100,
+                      child: const Icon(Icons.bookmark),
+                    ),
                     title: Text(item['name']!),
                     subtitle: Text(item['subtitle']!),
                     onTap: () {},

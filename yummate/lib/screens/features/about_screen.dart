@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AboutScreen extends StatelessWidget {
-  const AboutScreen({Key? key}) : super(key: key);
+  const AboutScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +17,14 @@ class AboutScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
-            Text('Yummate', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            Text(
+              'Yummate',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
             SizedBox(height: 12),
-            Text('Yummate helps you discover recipes based on ingredients and photos.\n\nBuilt with love.\n'),
+            Text(
+              'Yummate helps you discover recipes based on ingredients and photos.\n\nBuilt with love.\n',
+            ),
             SizedBox(height: 18),
             Text('Contact', style: TextStyle(fontWeight: FontWeight.bold)),
             SizedBox(height: 6),

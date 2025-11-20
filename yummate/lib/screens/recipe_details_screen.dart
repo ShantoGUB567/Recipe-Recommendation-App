@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'generate_recipe_screen.dart';
+import 'package:yummate/models/recipe_model.dart';
 
 class RecipeDetailsScreen extends StatelessWidget {
-  final Recipe recipe;
-  const RecipeDetailsScreen({Key? key, required this.recipe}) : super(key: key);
+  final RecipeModel recipe;
+  const RecipeDetailsScreen({super.key, required this.recipe});
 
   @override
   Widget build(BuildContext context) {
@@ -23,13 +23,17 @@ class RecipeDetailsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  recipe.imageUrl,
-                  width: 250,
-                  height: 180,
-                  fit: BoxFit.cover,
+              child: Container(
+                width: 250,
+                height: 180,
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade100,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.restaurant_menu,
+                  size: 80,
+                  color: Colors.deepOrange,
                 ),
               ),
             ),
@@ -44,27 +48,34 @@ class RecipeDetailsScreen extends StatelessWidget {
               spacing: 8,
               runSpacing: 4,
               children: [
-                Chip(label: Text('Time: ${recipe.prepareTime}')),
-                Chip(label: Text('Calorie: ${recipe.calorie}')),
+                Chip(label: Text('Time: ${recipe.preparationTime}')),
+                Chip(label: Text('Calorie: ${recipe.calories}')),
               ],
             ),
             const SizedBox(height: 16),
+            Text(recipe.description, style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 16),
             Text(
-              recipe.description,
-              style: const TextStyle(fontSize: 16),
+              'Ingredients',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            ...recipe.ingredients.map(
+              (ing) => ListTile(
+                leading: const Icon(Icons.check_circle_outline),
+                title: Text(ing),
+              ),
             ),
             const SizedBox(height: 16),
-            Text('Ingredients', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ...recipe.ingredients.map((ing) => ListTile(
-                  leading: const Icon(Icons.check_circle_outline),
-                  title: Text(ing),
-                )),
-            const SizedBox(height: 16),
-            Text('Steps', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ...recipe.steps.asMap().entries.map((entry) => ListTile(
-                  leading: CircleAvatar(child: Text('${entry.key + 1}')),
-                  title: Text(entry.value),
-                )),
+            Text(
+              'Instructions',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            ...recipe.instructions.asMap().entries.map(
+              (entry) => ListTile(
+                leading: CircleAvatar(child: Text('${entry.key + 1}')),
+                title: Text(entry.value),
+              ),
+            ),
           ],
         ),
       ),
