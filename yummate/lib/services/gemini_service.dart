@@ -12,14 +12,9 @@ class GeminiService {
       throw Exception('GOOGLE_AI_API_KEY not found in .env file');
     }
 
-    // Text-only model - Using Gemini 2.0 Flash
+    // Using gemini-2.5-flash for both text and vision
     _model = GenerativeModel(model: 'gemini-2.5-flash', apiKey: apiKey);
-
-    // Vision model for image analysis - Using Gemini 2.0 Flash
-    _visionModel = GenerativeModel(
-      model: 'gemini-2.0-flash-exp',
-      apiKey: apiKey,
-    );
+    _visionModel = GenerativeModel(model: 'gemini-2.5-flash', apiKey: apiKey);
   }
 
   Future<String> generateRecipe({
@@ -125,26 +120,56 @@ Make each variation unique, authentic, delicious and easy to follow! Separate ea
 
   Future<List<String>> identifyIngredientsFromImage(File imageFile) async {
     try {
+      print('Reading image file: ${imageFile.path}');
       final imageBytes = await imageFile.readAsBytes();
-      final imagePart = DataPart('image/jpeg', imageBytes);
+      print('Image bytes read: ${imageBytes.length} bytes');
 
-      final prompt = '''
-Analyze this image and identify all food ingredients visible.
-List only the ingredient names, one per line, without numbers or extra text.
-Only list recognizable food items or ingredients.
-''';
+      // Determine image MIME type from file extension
+      String mimeType = 'image/jpeg';
+      final extension = imageFile.path.toLowerCase().split('.').last;
+      if (extension == 'png') {
+        mimeType = 'image/png';
+      } else if (extension == 'jpg' || extension == 'jpeg') {
+        mimeType = 'image/jpeg';
+      } else if (extension == 'webp') {
+        mimeType = 'image/webp';
+      }
+      print('Using MIME type: $mimeType');
 
+      final imagePart = DataPart(mimeType, imageBytes);
+
+      final prompt =
+          '''Look at this image and list all the food ingredients you can see.
+Provide ONLY the ingredient names, one per line.
+Do not add numbers, bullets, or descriptions.
+Just simple ingredient names like: tomato, onion, chicken, rice''';
+
+      print('Sending request to Gemini vision model...');
       final response = await _visionModel.generateContent([
         Content.multi([TextPart(prompt), imagePart]),
       ]);
 
+      print('Received response from Gemini');
       final text = response.text ?? '';
-      return text
+      print('Response text: $text');
+
+      if (text.isEmpty) {
+        throw Exception('No response from Gemini vision model');
+      }
+
+      final ingredients = text
           .split('\n')
-          .where((line) => line.trim().isNotEmpty)
           .map((line) => line.trim())
+          .map(
+            (line) => line.replaceAll(RegExp(r'^[\d+\.\-\*\)\s]+'), ''),
+          ) // Remove bullets and numbers
+          .where((line) => line.isNotEmpty && line.length > 1)
           .toList();
+
+      print('Parsed ingredients: $ingredients');
+      return ingredients;
     } catch (e) {
+      print('Error in identifyIngredientsFromImage: $e');
       throw Exception('Error identifying ingredients: $e');
     }
   }
