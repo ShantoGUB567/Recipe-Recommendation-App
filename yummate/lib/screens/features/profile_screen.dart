@@ -4,6 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:get/get.dart';
 import 'package:yummate/core/widgets/app_drawer.dart';
 import 'package:yummate/screens/auth/login_screen.dart';
+import 'package:yummate/screens/features/edit_profile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   // accept user id; if null, will use currentUser
@@ -152,7 +153,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             IconButton(
                               onPressed: () {
-                                Get.snackbar('Edit', 'Edit profile coming soon');
+                                Get.to(() => EditProfileScreen(
+                                  userData: _userData ?? {},
+                                  uid: _uid ?? '',
+                                ))?.then((_) => _loadUser());
                               },
                               icon: const Icon(Icons.edit, color: Colors.white),
                             ),
@@ -196,9 +200,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                             const SizedBox(height: 18),
 
+                            Card(
+                              elevation: 2,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(14),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('Preferences', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                    const SizedBox(height: 12),
+                                    Row(
+                                      children: [
+                                        const Expanded(flex: 2, child: Text('Spicy Level')),
+                                        Expanded(
+                                          flex: 3,
+                                          child: Row(
+                                            children: List.generate(5, (i) => Icon(Icons.local_fire_department, size: 16, color: i < (_userData?['spicy_level'] ?? 2) ? Colors.orange : Colors.grey.shade300)),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const Divider(),
+                                    const SizedBox(height: 8),
+                                    const Text('Favorite Cuisines', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                                    const SizedBox(height: 8),
+                                    Wrap(
+                                      spacing: 6,
+                                      children: ((_userData?['favorite_cuisines'] as List?) ?? []).map<Widget>((c) => Chip(label: Text(c))).toList(),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    const Text('Allergies', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                                    const SizedBox(height: 8),
+                                    Wrap(
+                                      spacing: 6,
+                                      children: ((_userData?['allergies'] as List?) ?? []).map<Widget>((a) => Chip(label: Text(a), backgroundColor: Colors.red.shade100)).toList(),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 18),
+
                             ElevatedButton.icon(
                               onPressed: () {
-                                Get.snackbar("Coming soon", "Edit profile will be available later");
+                                Get.to(() => EditProfileScreen(
+                                  userData: _userData ?? {},
+                                  uid: _uid ?? '',
+                                ))?.then((_) => _loadUser());
                               },
                               icon: const Icon(Icons.edit_rounded),
                               label: const Text("Edit Profile"),
