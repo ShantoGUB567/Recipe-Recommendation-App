@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,11 +8,8 @@ class EditProfileScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
   final String uid;
 
-  const EditProfileScreen({
-    Key? key,
-    required this.userData,
-    required this.uid,
-  }) : super(key: key);
+  const EditProfileScreen({Key? key, required this.userData, required this.uid})
+    : super(key: key);
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -30,8 +26,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   List<String> selectedAllergies = [];
   File? profileImage;
 
-  final List<String> cuisineOptions = ['Bangladeshi', 'Indian', 'Chinese', 'Italian', 'Thai', 'Mexican', 'American'];
-  final List<String> allergyOptions = ['Peanuts', 'Dairy', 'Gluten', 'Shellfish', 'Eggs', 'Tree Nuts'];
+  final List<String> cuisineOptions = [
+    'Bangladeshi',
+    'Indian',
+    'Chinese',
+    'Italian',
+    'Thai',
+    'Mexican',
+    'American',
+  ];
+  final List<String> allergyOptions = [
+    'Peanuts',
+    'Dairy',
+    'Gluten',
+    'Shellfish',
+    'Eggs',
+    'Tree Nuts',
+  ];
 
   final DatabaseReference _db = FirebaseDatabase.instance.ref();
 
@@ -39,11 +50,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void initState() {
     super.initState();
     nameController = TextEditingController(text: widget.userData['name'] ?? '');
-    emailController = TextEditingController(text: widget.userData['email'] ?? '');
-    phoneController = TextEditingController(text: widget.userData['phone'] ?? '');
-    usernameController = TextEditingController(text: widget.userData['username'] ?? '');
+    emailController = TextEditingController(
+      text: widget.userData['email'] ?? '',
+    );
+    phoneController = TextEditingController(
+      text: widget.userData['phone'] ?? '',
+    );
+    usernameController = TextEditingController(
+      text: widget.userData['username'] ?? '',
+    );
     spicyLevel = widget.userData['spicy_level'] ?? 2;
-    selectedCuisines = List<String>.from(widget.userData['favorite_cuisines'] ?? []);
+    selectedCuisines = List<String>.from(
+      widget.userData['favorite_cuisines'] ?? [],
+    );
     selectedAllergies = List<String>.from(widget.userData['allergies'] ?? []);
   }
 
@@ -67,9 +86,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         'allergies': selectedAllergies,
       });
       Get.back();
-      Get.snackbar('Success', 'Profile updated', snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Success',
+        'Profile updated',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } catch (e) {
-      Get.snackbar('Error', 'Failed to update profile: $e', snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Error',
+        'Failed to update profile: $e',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
@@ -100,13 +127,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     border: Border.all(color: Colors.orange, width: 2),
                   ),
                   child: profileImage != null
-                      ? ClipOval(child: Image.file(profileImage!, fit: BoxFit.cover))
+                      ? ClipOval(
+                          child: Image.file(profileImage!, fit: BoxFit.cover),
+                        )
                       : Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: const [
-                            Icon(Icons.camera_alt, color: Colors.orange, size: 32),
+                            Icon(
+                              Icons.camera_alt,
+                              color: Colors.orange,
+                              size: 32,
+                            ),
                             SizedBox(height: 4),
-                            Text('Change Photo', style: TextStyle(fontSize: 12)),
+                            Text(
+                              'Change Photo',
+                              style: TextStyle(fontSize: 12),
+                            ),
                           ],
                         ),
                 ),
@@ -120,19 +156,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             TextField(
               controller: nameController,
               decoration: InputDecoration(
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 hintText: 'Enter name',
               ),
             ),
             const SizedBox(height: 16),
 
             // Username
-            Text('Username', style: const TextStyle(fontWeight: FontWeight.w600)),
+            Text(
+              'Username',
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
             const SizedBox(height: 8),
             TextField(
               controller: usernameController,
               decoration: InputDecoration(
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 hintText: 'Enter username',
               ),
             ),
@@ -145,7 +188,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               controller: emailController,
               readOnly: true,
               decoration: InputDecoration(
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 filled: true,
                 fillColor: Colors.grey.shade100,
               ),
@@ -158,14 +203,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             TextField(
               controller: phoneController,
               decoration: InputDecoration(
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 hintText: 'Enter phone number',
               ),
             ),
             const SizedBox(height: 24),
 
             // Spicy Level
-            Text('Spicy Level', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+            Text(
+              'Spicy Level',
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+            ),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(12),
@@ -179,7 +229,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('🌶️ Mild'),
-                      Text('$spicyLevel', style: const TextStyle(fontWeight: FontWeight.bold)),
+                      Text(
+                        '$spicyLevel',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       const Text('🌶️🌶️🌶️ Very Hot'),
                     ],
                   ),
@@ -189,7 +242,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     min: 1,
                     max: 5,
                     divisions: 4,
-                    onChanged: (value) => setState(() => spicyLevel = value.toInt()),
+                    onChanged: (value) =>
+                        setState(() => spicyLevel = value.toInt()),
                   ),
                 ],
               ),
@@ -197,7 +251,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             const SizedBox(height: 24),
 
             // Favorite Cuisines
-            Text('Favorite Cuisines', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+            Text(
+              'Favorite Cuisines',
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+            ),
             const SizedBox(height: 12),
             Wrap(
               spacing: 8,
@@ -222,7 +279,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             const SizedBox(height: 24),
 
             // Allergies
-            Text('Allergies', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+            Text(
+              'Allergies',
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+            ),
             const SizedBox(height: 12),
             Wrap(
               spacing: 8,

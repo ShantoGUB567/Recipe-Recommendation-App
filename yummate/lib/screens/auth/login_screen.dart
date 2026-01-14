@@ -5,7 +5,9 @@ import 'package:yummate/core/widgets/custom_text_field.dart';
 import 'package:yummate/core/widgets/primary_button.dart';
 import 'package:yummate/screens/auth/signup_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:yummate/screens/features/home_screen.dart';
+import 'package:yummate/services/session_service.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
@@ -15,6 +17,7 @@ class LoginScreen extends StatelessWidget {
   final TextEditingController passwordController = TextEditingController();
 
   final FirebaseAuth auth = FirebaseAuth.instance;
+  final SessionService sessionService = SessionService();
 
   Future<void> loginUser() async {
     String email = emailController.text.trim();
@@ -26,13 +29,31 @@ class LoginScreen extends StatelessWidget {
     }
 
     try {
-      await auth.signInWithEmailAndPassword(
+      UserCredential userCredential = await auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
+      // Save login session
+      await sessionService.saveLoginSession(
+        userId: userCredential.user!.uid,
+        email: email,
+      );
+
+      // Fetch user name from Firebase Database
+      final dbRef = FirebaseDatabase.instance
+          .ref()
+          .child('users')
+          .child(userCredential.user!.uid);
+      final snapshot = await dbRef.get();
+      String userName = 'User';
+      if (snapshot.exists) {
+        final userData = snapshot.value as Map<dynamic, dynamic>;
+        userName = userData['name'] ?? userData['username'] ?? 'User';
+      }
+
       // SUCCESS → Go to HomeScreen
-      // Get.offAll(() => HomeScreen());
+      Get.offAll(() => HomeScreen(userName: userName));
 
       Get.snackbar("Success", "Login successful!");
     } catch (e) {
@@ -65,22 +86,31 @@ class LoginScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(12),
                 child: Image.asset(
-                  'assets/images/logo.jpg',
-                  width: 80,
-                  height: 80,
-                  fit: BoxFit.cover,
+                  'assets/images/logo.png',
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  height:
+                      MediaQuery.of(context).size.width * 0.5 * (975 / 2025),
+                  fit: BoxFit.contain,
                 ),
               ),
 
               const SizedBox(height: 16),
-              const Text(
-                "Yummate",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    "Turn Ingredients into Magic",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                    ),
+                  ),
                 ),
               ),
 
@@ -119,16 +149,19 @@ class LoginScreen extends StatelessWidget {
                   try {
                     final auth = FirebaseAuth.instance;
 
-                    final userCredential = await auth.signInWithEmailAndPassword(
-                      email: emailController.text.trim(),
-                      password: passwordController.text.trim(),
-                    );
+                    final userCredential = await auth
+                        .signInWithEmailAndPassword(
+                          email: emailController.text.trim(),
+                          password: passwordController.text.trim(),
+                        );
 
                     final user = userCredential.user;
 
                     // displayName null hole email er first part use hobe
                     final String name =
-                        user?.displayName ?? user?.email?.split('@')[0] ?? "Foodie";
+                        user?.displayName ??
+                        user?.email?.split('@')[0] ??
+                        "Foodie";
 
                     Get.offAll(() => HomeScreen(userName: name));
                   } catch (e) {
@@ -138,7 +171,7 @@ class LoginScreen extends StatelessWidget {
                       snackPosition: SnackPosition.BOTTOM,
                     );
                   }
-                }
+                },
                 // onPressed: loginUser,
               ),
 
@@ -150,11 +183,9 @@ class LoginScreen extends StatelessWidget {
                   Text(
                     "Don’t have an account?",
                     style: TextStyle(
-                      color: Theme.of(context)
-                          .textTheme
-                          .bodyMedium!
-                          .color!
-                          .withOpacity(0.7),
+                      color: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium!.color!.withOpacity(0.7),
                     ),
                   ),
                   TextButton(

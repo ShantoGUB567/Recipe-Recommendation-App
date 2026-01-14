@@ -7,6 +7,8 @@ import 'package:yummate/core/theme/theme_controller.dart';
 import 'package:yummate/core/widgets/custom_text_field.dart';
 import 'package:yummate/core/widgets/primary_button.dart';
 import 'package:yummate/screens/auth/login_screen.dart';
+import 'package:yummate/services/session_service.dart';
+import 'package:yummate/screens/features/home_screen.dart';
 
 class SignupScreen extends StatelessWidget {
   SignupScreen({super.key});
@@ -19,11 +21,13 @@ class SignupScreen extends StatelessWidget {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
-  TextEditingController();
+      TextEditingController();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final DatabaseReference dbRef =
-  FirebaseDatabase.instance.ref().child("users");
+  final DatabaseReference dbRef = FirebaseDatabase.instance.ref().child(
+    "users",
+  );
+  final SessionService sessionService = SessionService();
 
   Future<void> signupUser() async {
     String name = nameController.text.trim();
@@ -39,24 +43,27 @@ class SignupScreen extends StatelessWidget {
         phone.isEmpty ||
         password.isEmpty ||
         confirmPassword.isEmpty) {
-      Get.snackbar("Error", "All fields are required!",
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        "Error",
+        "All fields are required!",
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return;
     }
 
     if (password != confirmPassword) {
-      Get.snackbar("Error", "Passwords do not match!",
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        "Error",
+        "Passwords do not match!",
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return;
     }
 
     try {
       // ✅ Create user in Firebase Auth
-      UserCredential userCredential =
-      await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(email: email, password: password);
 
       String uid = userCredential.user!.uid;
 
@@ -69,17 +76,33 @@ class SignupScreen extends StatelessWidget {
         "uid": uid,
       });
 
-      Get.snackbar("Success", "Account created successfully!",
-          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.green);
+      // ✅ Save login session
+      await sessionService.saveLoginSession(userId: uid, email: email);
 
-      Get.off(() => LoginScreen());
+      Get.snackbar(
+        "Success",
+        "Account created successfully!",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+      );
+
+      // Go directly to HomeScreen after signup
+      Get.offAll(() => HomeScreen(userName: name));
     } on FirebaseAuthException catch (e) {
       // Show structured auth error code and message
-      Get.snackbar("Signup Failed", "${e.code}: ${e.message}",
-          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red);
+      Get.snackbar(
+        "Signup Failed",
+        "${e.code}: ${e.message}",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+      );
     } catch (e) {
-      Get.snackbar("Signup Failed", e.toString(),
-          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red);
+      Get.snackbar(
+        "Signup Failed",
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+      );
     }
   }
 
@@ -214,7 +237,6 @@ class SignupScreen extends StatelessWidget {
     );
   }
 }
-
 
 // Variant: debugAndroidTest
 // Config: debug

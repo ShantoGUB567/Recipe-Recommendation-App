@@ -91,30 +91,42 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       children: [
                         // Logo
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(30),
+                          borderRadius: BorderRadius.circular(20),
                           child: Image.asset(
-                            'assets/images/logo.jpg',
-                            width: 150,
-                            height: 150,
-                            fit: BoxFit.cover,
+                            'assets/images/logo.png',
+                            width: MediaQuery.of(context).size.width * 0.7,
+                            height:
+                                MediaQuery.of(context).size.width *
+                                0.7 *
+                                (975 / 2025),
+                            fit: BoxFit.contain,
                           ),
                         ),
 
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 30),
 
-                        // App Name
-                        Text(
-                          'YumMate',
-                          style: TextStyle(
-                            fontSize: 42,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            shadows: [
-                              Shadow(
-                                color: Colors.black.withOpacity(0.5),
-                                blurRadius: 10,
+                        // Slogan
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              'Turn Ingredients into Magic',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                letterSpacing: 0.5,
+                                height: 1.3,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black.withOpacity(0.5),
+                                    blurRadius: 10,
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
                         ),
                       ],
