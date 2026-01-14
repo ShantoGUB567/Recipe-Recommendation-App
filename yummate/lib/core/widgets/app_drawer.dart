@@ -8,6 +8,8 @@ import 'package:yummate/screens/features/settings_screen.dart';
 import 'package:yummate/screens/features/about_screen.dart';
 import 'package:yummate/screens/features/saved_recipes_screen.dart';
 import 'package:yummate/screens/features/community_screen.dart';
+import 'package:yummate/screens/features/saved_recipe_sessions_screen.dart';
+import 'package:yummate/services/session_service.dart';
 
 class AppDrawer extends StatelessWidget {
   final String userName;
@@ -23,7 +25,12 @@ class AppDrawer extends StatelessWidget {
           // Top gradient header with avatar
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.only(top: 42, bottom: 20, left: 16, right: 16),
+            padding: const EdgeInsets.only(
+              top: 42,
+              bottom: 20,
+              left: 16,
+              right: 16,
+            ),
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [Color(0xFFFB8C00), Color(0xFFEF6C00)],
@@ -39,7 +46,11 @@ class AppDrawer extends StatelessWidget {
                   backgroundColor: Colors.white,
                   child: Text(
                     userName.isNotEmpty ? userName[0].toUpperCase() : 'Y',
-                    style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFFEF6C00)),
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFEF6C00),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -47,9 +58,22 @@ class AppDrawer extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(userName, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text(
+                        userName,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       const SizedBox(height: 4),
-                      Text(userEmail ?? "", style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                      Text(
+                        userEmail ?? "",
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -72,13 +96,31 @@ class AppDrawer extends StatelessWidget {
                   Get.back();
                   Get.offAll(() => HomeScreen(userName: userName));
                 }),
-                _buildListTile(context, Icons.person_outline_rounded, 'Profile', () {
+                _buildListTile(
+                  context,
+                  Icons.person_outline_rounded,
+                  'Profile',
+                  () {
+                    Get.back();
+                    Get.to(
+                      () => ProfileScreen(
+                        userId: FirebaseAuth.instance.currentUser?.uid,
+                      ),
+                    );
+                  },
+                ),
+                _buildListTile(
+                  context,
+                  Icons.bookmark_rounded,
+                  'Saved Recipes',
+                  () {
+                    Get.back();
+                    Get.to(() => SavedRecipesScreen());
+                  },
+                ),
+                _buildListTile(context, Icons.history, 'Recipe History', () {
                   Get.back();
-                  Get.to(() => ProfileScreen(userId: FirebaseAuth.instance.currentUser?.uid));
-                }),
-                _buildListTile(context, Icons.bookmark_rounded, 'Saved Recipes', () {
-                  Get.back();
-                  Get.to(() => SavedRecipesScreen());
+                  Get.to(() => const SavedRecipeSessionsScreen());
                 }),
                 // replaced 'My Ingredients' with Community feature
                 _buildListTile(context, Icons.group_rounded, 'Community', () {
@@ -89,10 +131,15 @@ class AppDrawer extends StatelessWidget {
                   Get.back();
                   Get.to(() => SettingsScreen());
                 }),
-                _buildListTile(context, Icons.info_outline_rounded, 'About Yummate', () {
-                  Get.back();
-                  Get.to(() => AboutScreen());
-                }),
+                _buildListTile(
+                  context,
+                  Icons.info_outline_rounded,
+                  'About Yummate',
+                  () {
+                    Get.back();
+                    Get.to(() => AboutScreen());
+                  },
+                ),
               ],
             ),
           ),
@@ -102,11 +149,14 @@ class AppDrawer extends StatelessWidget {
             padding: const EdgeInsets.all(12.0),
             child: ListTile(
               tileColor: Colors.red.withOpacity(0.06),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               leading: const Icon(Icons.logout_rounded, color: Colors.red),
               title: const Text("Logout", style: TextStyle(color: Colors.red)),
               onTap: () async {
                 await FirebaseAuth.instance.signOut();
+                await SessionService().logout();
                 Get.offAll(() => LoginScreen());
               },
             ),
@@ -116,7 +166,12 @@ class AppDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildListTile(BuildContext context, IconData icon, String title, VoidCallback onTap) {
+  Widget _buildListTile(
+    BuildContext context,
+    IconData icon,
+    String title,
+    VoidCallback onTap,
+  ) {
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: Colors.deepOrange.withOpacity(0.12),

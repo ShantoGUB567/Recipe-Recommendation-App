@@ -336,7 +336,11 @@ class _HomeScreenState extends State<HomeScreen>
       final recipes = RecipeModel.parseMultipleRecipes(response);
 
       Get.to(
-        () => GenerateRecipeScreen(recipes: recipes, rawResponse: response),
+        () => GenerateRecipeScreen(
+          recipes: recipes,
+          rawResponse: response,
+          query: 'Search: ${recipeName.trim()}',
+        ),
       );
 
       searchController.clear();
@@ -1140,6 +1144,8 @@ class _HomeScreenState extends State<HomeScreen>
                                 () => GenerateRecipeScreen(
                                   recipes: recipes,
                                   rawResponse: response,
+                                  query:
+                                      'Ingredients: ${ingredients.join(", ")}',
                                 ),
                               );
                             } catch (e) {

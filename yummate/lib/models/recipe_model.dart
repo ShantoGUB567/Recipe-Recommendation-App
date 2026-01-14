@@ -6,6 +6,7 @@ class RecipeModel {
   final List<String> ingredients;
   final List<String> instructions;
   final String? imageUrl;
+  final String servings;
 
   RecipeModel({
     required this.name,
@@ -15,6 +16,7 @@ class RecipeModel {
     required this.ingredients,
     required this.instructions,
     this.imageUrl,
+    this.servings = '4',
   });
 
   static List<RecipeModel> parseMultipleRecipes(String response) {
@@ -51,6 +53,7 @@ class RecipeModel {
       String prepTime = '30 min';
       String calories = '350 kcal';
       String description = '';
+      String servings = '4';
       List<String> ingredients = [];
       List<String> instructions = [];
 
@@ -69,6 +72,8 @@ class RecipeModel {
           prepTime = line.replaceFirst('Preparation Time:', '').trim();
         } else if (line.startsWith('Calories:')) {
           calories = line.replaceFirst('Calories:', '').trim();
+        } else if (line.startsWith('Servings:')) {
+          servings = line.replaceFirst('Servings:', '').trim();
         } else if (line.startsWith('Description:')) {
           description = line.replaceFirst('Description:', '').trim();
         } else if (line.startsWith('Ingredients:')) {
@@ -87,8 +92,11 @@ class RecipeModel {
             instructions.add(instruction);
           }
         } else if (currentSection == 'ingredients' && line.isNotEmpty) {
-          // Handle ingredients without bullet points
-          ingredients.add(line);
+          // Skip section headers like "For Rice:", "For Chicken:", etc.
+          if (!line.endsWith(':') && !line.contains('For ')) {
+            // Handle ingredients without bullet points
+            ingredients.add(line);
+          }
         } else if (currentSection == 'description' && line.isNotEmpty) {
           description += ' $line';
         }
@@ -106,6 +114,7 @@ class RecipeModel {
         description: description.trim(),
         ingredients: ingredients,
         instructions: instructions,
+        servings: servings,
       );
     } catch (e) {
       // Return a fallback recipe if parsing fails
@@ -122,6 +131,7 @@ class RecipeModel {
       'ingredients': ingredients,
       'instructions': instructions,
       'imageUrl': imageUrl,
+      'servings': servings,
     };
   }
 
@@ -134,6 +144,7 @@ class RecipeModel {
       ingredients: List<String>.from(json['ingredients'] ?? []),
       instructions: List<String>.from(json['instructions'] ?? []),
       imageUrl: json['imageUrl'],
+      servings: json['servings'] ?? '4',
     );
   }
 }

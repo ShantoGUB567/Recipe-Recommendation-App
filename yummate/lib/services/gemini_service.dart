@@ -61,14 +61,18 @@ For EACH recipe, provide the response in the following format:
 
 **Recipe Name:** [Creative recipe name]
 
-**Preparation Time:** [Time in minutes]
+**Preparation Time:** [Total approximate time including all prep, marination, and cooking - format like: 1 Hr 10 Min or 30 Min or 45 Min]
 
-**Calories:** [Approximate calories]
+**Servings:** [Number of servings like: 4 or 6]
+
+**Calories:** [Total calories as number only, like: 780]
 
 **Description:** [Brief description of the dish]
 
 **Ingredients:**
-- [List each ingredient with measurements]
+- [quantity] [unit] [ingredient name] (e.g., "4 large baking potatoes" or "3 tablespoons olive oil, divided")
+- Include exact measurements (cups, tablespoons, teaspoons, ounces, grams, etc.)
+- Be specific with quantities and preparations (e.g., "2 cups cheese, grated" or "Salt and ground black pepper")
 
 **Instructions:**
 1. [Step-by-step cooking instructions]
@@ -94,14 +98,18 @@ For EACH recipe variation, provide the response in the following format:
 
 **Recipe Name:** [Recipe name with variation]
 
-**Preparation Time:** [Time in minutes]
+**Preparation Time:** [Total approximate time including all prep, marination, and cooking - format like: 1 Hr 10 Min or 30 Min or 45 Min]
 
-**Calories:** [Approximate calories]
+**Servings:** [Number of servings like: 4 or 6]
+
+**Calories:** [Total calories as number only, like: 780]
 
 **Description:** [Brief description of the dish]
 
 **Ingredients:**
-- [List each ingredient with measurements]
+- [quantity] [unit] [ingredient name] (e.g., "4 large baking potatoes" or "3 tablespoons olive oil, divided")
+- Include exact measurements (cups, tablespoons, teaspoons, ounces, grams, etc.)
+- Be specific with quantities and preparations (e.g., "2 cups cheese, grated" or "Salt and ground black pepper")
 
 **Instructions:**
 1. [Step-by-step cooking instructions]
