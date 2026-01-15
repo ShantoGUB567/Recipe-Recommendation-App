@@ -23,46 +23,68 @@ class LoginScreen extends StatelessWidget {
     String email = emailController.text.trim();
     String password = passwordController.text.trim();
 
+    debugPrint("🔍 loginUser() called");
+    debugPrint("📧 Email: $email");
+    debugPrint("🔑 Password length: ${password.length}");
+
     if (email.isEmpty || password.isEmpty) {
       Get.snackbar("Error", "Email & password required");
+      debugPrint("❌ Empty email or password");
       return;
     }
 
     try {
+      debugPrint("📡 Attempting Firebase Login...");
       UserCredential userCredential = await auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      // Save login session
+      debugPrint("✅ Firebase Login Successful");
+      debugPrint("👤 User UID: ${userCredential.user?.uid}");
+
       await sessionService.saveLoginSession(
         userId: userCredential.user!.uid,
         email: email,
       );
+      debugPrint("💾 Login session saved");
 
-      // Fetch user name from Firebase Database
+      // Fetch name from Realtime Database
       final dbRef = FirebaseDatabase.instance
           .ref()
           .child('users')
           .child(userCredential.user!.uid);
+
+      debugPrint("📡 Fetching user name from DB path: users/${userCredential.user!.uid}");
+
       final snapshot = await dbRef.get();
       String userName = 'User';
+
       if (snapshot.exists) {
-        final userData = snapshot.value as Map<dynamic, dynamic>;
-        userName = userData['name'] ?? userData['username'] ?? 'User';
+        final data = snapshot.value as Map<dynamic, dynamic>;
+        debugPrint("📥 User Data: $data");
+
+        userName = data['name'] ?? data['username'] ?? 'User';
+      } else {
+        debugPrint("⚠️ User DB snapshot does not exist");
       }
 
-      // SUCCESS → Go to HomeScreen
+      debugPrint("👤 Final userName: $userName");
+
       Get.offAll(() => HomeScreen(userName: userName));
+      debugPrint("➡️ Navigated to HomeScreen");
 
       Get.snackbar("Success", "Login successful!");
     } catch (e) {
+      debugPrint("❌ Login Failed: $e");
       Get.snackbar("Login Failed", e.toString());
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("📍 LoginScreen build() called");
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -75,10 +97,14 @@ class LoginScreen extends StatelessWidget {
                   ? Icons.wb_sunny_rounded
                   : Icons.nightlight_round_rounded,
             ),
-            onPressed: themeController.toggleTheme,
+            onPressed: () {
+              debugPrint("🌓 Theme toggle pressed");
+              themeController.toggleTheme();
+            },
           ),
         ],
       ),
+
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
@@ -90,27 +116,20 @@ class LoginScreen extends StatelessWidget {
                 child: Image.asset(
                   'assets/images/logo.png',
                   width: MediaQuery.of(context).size.width * 0.5,
-                  height:
-                      MediaQuery.of(context).size.width * 0.5 * (975 / 2025),
+                  height: MediaQuery.of(context).size.width * 0.5 * (975 / 2025),
                   fit: BoxFit.contain,
                 ),
               ),
 
               const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    "Turn Ingredients into Magic",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.5,
-                      color: Theme.of(context).textTheme.bodyLarge?.color,
-                    ),
-                  ),
+
+              Text(
+                "Turn Ingredients into Magic",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
                 ),
               ),
 
@@ -133,10 +152,11 @@ class LoginScreen extends StatelessWidget {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    debugPrint("🔐 Forgot Password pressed");
+                  },
                   child: const Text(
                     "Forgot Password?",
-                    style: TextStyle(fontWeight: FontWeight.w500),
                   ),
                 ),
               ),
@@ -146,33 +166,9 @@ class LoginScreen extends StatelessWidget {
               PrimaryButton(
                 text: "Login",
                 onPressed: () async {
-                  try {
-                    final auth = FirebaseAuth.instance;
-
-                    final userCredential = await auth
-                        .signInWithEmailAndPassword(
-                          email: emailController.text.trim(),
-                          password: passwordController.text.trim(),
-                        );
-
-                    final user = userCredential.user;
-
-                    // displayName null hole email er first part use hobe
-                    final String name =
-                        user?.displayName ??
-                        user?.email?.split('@')[0] ??
-                        "Foodie";
-
-                    Get.offAll(() => HomeScreen(userName: name));
-                  } catch (e) {
-                    Get.snackbar(
-                      "Login Failed",
-                      e.toString(),
-                      snackPosition: SnackPosition.BOTTOM,
-                    );
-                  }
+                  debugPrint("▶️ Login button pressed");
+                  await loginUser();
                 },
-                // onPressed: loginUser,
               ),
 
               const SizedBox(height: 20),
@@ -180,22 +176,13 @@ class LoginScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    "Don’t have an account?",
-                    style: TextStyle(
-                      color: Theme.of(
-                        context,
-                      ).textTheme.bodyMedium!.color!.withOpacity(0.7),
-                    ),
-                  ),
+                  Text("Don’t have an account?"),
                   TextButton(
                     onPressed: () {
+                      debugPrint("➡️ Going to SignupScreen");
                       Get.to(() => SignupScreen());
                     },
-                    child: const Text(
-                      "Sign Up",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                    child: const Text("Sign Up"),
                   ),
                 ],
               ),
