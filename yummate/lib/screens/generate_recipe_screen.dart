@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:yummate/models/recipe_model.dart';
 import 'package:yummate/services/session_service.dart';
+import 'package:yummate/services/recipe_service.dart';
 import 'recipe_details_screen.dart';
 
 class GenerateRecipeScreen extends StatefulWidget {
   final List<RecipeModel> recipes;
   final String rawResponse;
   final String? query;
+  final String type; // "search" or "generate"
 
   const GenerateRecipeScreen({
     super.key,
     required this.recipes,
     required this.rawResponse,
     this.query,
+    this.type = "generate",
   });
 
   @override
@@ -22,6 +26,7 @@ class GenerateRecipeScreen extends StatefulWidget {
 
 class _GenerateRecipeScreenState extends State<GenerateRecipeScreen> {
   final SessionService _sessionService = SessionService();
+  final RecipeService _recipeService = RecipeService();
 
   @override
   void initState() {
@@ -30,7 +35,22 @@ class _GenerateRecipeScreenState extends State<GenerateRecipeScreen> {
   }
 
   Future<void> _saveSession() async {
-    // Save the generated recipe session
+    // Save to Firebase if user is logged in
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        await _recipeService.saveRecipeHistory(
+          userId: user.uid,
+          query: widget.query ?? 'Generated Recipes',
+          type: widget.type,
+          recipes: widget.recipes,
+        );
+      } catch (e) {
+        print('Error saving history to Firebase: $e');
+      }
+    }
+
+    // Also save to local session for caching purposes (optional)
     await _sessionService.saveGeneratedRecipeSession(
       recipes: widget.recipes,
       query: widget.query ?? 'Generated Recipes',

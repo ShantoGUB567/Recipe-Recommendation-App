@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:yummate/models/recipe_model.dart';
 import 'package:yummate/services/session_service.dart';
+import 'package:yummate/services/recipe_service.dart';
 import 'package:share_plus/share_plus.dart';
 
 class RecipeDetailsScreen extends StatefulWidget {
@@ -15,38 +17,96 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
   bool isMetric = true;
   final Set<int> checkedIngredients = {};
   final SessionService _sessionService = SessionService();
-  bool isFavorite = false;
+  final RecipeService _recipeService = RecipeService();
+  bool isSaved = false;
+  bool _isLoadingSaveStatus = true;
 
   @override
   void initState() {
     super.initState();
     _loadSessionData();
+    _checkSaveStatus();
     // Save to recent recipes
     _sessionService.saveRecentRecipe(widget.recipe);
   }
 
+  Future<void> _checkSaveStatus() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        final saved = await _recipeService.isRecipeSaved(
+          userId: user.uid,
+          recipeName: widget.recipe.name,
+        );
+        setState(() {
+          isSaved = saved;
+          _isLoadingSaveStatus = false;
+        });
+      } catch (e) {
+        print('Error checking save status: $e');
+        setState(() => _isLoadingSaveStatus = false);
+      }
+    } else {
+      setState(() => _isLoadingSaveStatus = false);
+    }
+  }
+
   Future<void> _loadSessionData() async {
-    // Load favorite status
-    final favorite = await _sessionService.isFavorite(widget.recipe.name);
     // Load checked ingredients
     final checked = await _sessionService.getCheckedIngredients(
       widget.recipe.name,
     );
     setState(() {
-      isFavorite = favorite;
       checkedIngredients.addAll(checked);
     });
   }
 
-  Future<void> _toggleFavorite() async {
-    if (isFavorite) {
-      await _sessionService.removeFavoriteRecipe(widget.recipe.name);
-    } else {
-      await _sessionService.saveFavoriteRecipe(widget.recipe);
+  Future<void> _toggleSaveRecipe() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please login to save recipes')),
+      );
+      return;
     }
-    setState(() {
-      isFavorite = !isFavorite;
-    });
+
+    try {
+      if (isSaved) {
+        // Find the recipe ID and remove it
+        final savedRecipes = await _recipeService.getSavedRecipes(user.uid);
+        for (var saved in savedRecipes) {
+          if (saved.recipe.name == widget.recipe.name) {
+            await _recipeService.removeSavedRecipe(
+              userId: user.uid,
+              recipeId: saved.id,
+            );
+            break;
+          }
+        }
+        setState(() => isSaved = false);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Recipe removed from saved')),
+          );
+        }
+      } else {
+        await _recipeService.saveRecipe(
+          userId: user.uid,
+          recipe: widget.recipe,
+        );
+        setState(() => isSaved = true);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Recipe saved successfully')),
+          );
+        }
+      }
+    } catch (e) {
+      print('Error toggling save: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
   }
 
   Future<void> _saveCheckedIngredients() async {
@@ -96,6 +156,18 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
+        actions: [
+          if (!_isLoadingSaveStatus)
+            IconButton(
+              icon: Icon(
+                isSaved ? Icons.bookmark : Icons.bookmark_border,
+                color: Colors.white,
+                size: 28,
+              ),
+              onPressed: _toggleSaveRecipe,
+              tooltip: isSaved ? 'Remove from saved' : 'Save recipe',
+            ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -135,11 +207,13 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _buildCircularButton(
-                    icon: Icons.favorite,
-                    label: '${widget.recipe.calories}\nCalories',
-                    color: const Color(0xFFFF6B35),
-                    onTap: _toggleFavorite,
-                    isFilled: isFavorite,
+                    icon: isSaved ? Icons.bookmark : Icons.bookmark_border,
+                    label: 'Save\nRecipe',
+                    color: isSaved
+                        ? const Color(0xFFFF6B35)
+                        : const Color(0xFFFF6B35),
+                    onTap: _toggleSaveRecipe,
+                    isFilled: isSaved,
                   ),
                   _buildCircularButton(
                     icon: Icons.restaurant_menu,

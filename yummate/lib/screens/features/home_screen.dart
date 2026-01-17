@@ -340,6 +340,7 @@ class _HomeScreenState extends State<HomeScreen>
           recipes: recipes,
           rawResponse: response,
           query: 'Search: ${recipeName.trim()}',
+          type: 'search',
         ),
       );
 
@@ -639,7 +640,7 @@ class _HomeScreenState extends State<HomeScreen>
                     border: Border.all(color: Colors.grey.shade200),
                   ),
                   child: DropdownButtonFormField<String>(
-                    value: selectedCuisine,
+                    initialValue: selectedCuisine,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       prefixIcon: Icon(
@@ -891,7 +892,7 @@ class _HomeScreenState extends State<HomeScreen>
                     border: Border.all(color: Colors.grey.shade200),
                   ),
                   child: DropdownButtonFormField<String>(
-                    value: selectedCuisine,
+                    initialValue: selectedCuisine,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       prefixIcon: Icon(
@@ -1146,6 +1147,7 @@ class _HomeScreenState extends State<HomeScreen>
                                   rawResponse: response,
                                   query:
                                       'Ingredients: ${ingredients.join(", ")}',
+                                  type: 'generate',
                                 ),
                               );
                             } catch (e) {

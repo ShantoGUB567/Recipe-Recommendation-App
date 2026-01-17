@@ -8,8 +8,7 @@ class EditProfileScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
   final String uid;
 
-  const EditProfileScreen({Key? key, required this.userData, required this.uid})
-    : super(key: key);
+  const EditProfileScreen({super.key, required this.userData, required this.uid});
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();

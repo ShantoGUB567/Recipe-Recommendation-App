@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:yummate/screens/auth/login_screen.dart';
 import 'package:yummate/screens/features/profile_screen.dart';
+import 'package:yummate/screens/features/edit_profile_screen.dart';
 import 'package:yummate/screens/features/home_screen.dart';
 import 'package:yummate/screens/features/settings_screen.dart';
 import 'package:yummate/screens/features/about_screen.dart';
 import 'package:yummate/screens/features/saved_recipes_screen.dart';
+import 'package:yummate/screens/features/saved_posts_screen.dart';
 import 'package:yummate/screens/features/community_screen.dart';
-import 'package:yummate/screens/features/saved_recipe_sessions_screen.dart';
+import 'package:yummate/screens/features/recipe_history_screen.dart';
 import 'package:yummate/services/session_service.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -78,7 +81,21 @@ class AppDrawer extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    final uid = FirebaseAuth.instance.currentUser?.uid;
+                    if (uid != null) {
+                      final DatabaseReference db = FirebaseDatabase.instance.ref();
+                      final snapshot = await db.child('users').child(uid).get();
+                      if (snapshot.exists) {
+                        Get.to(
+                          () => EditProfileScreen(
+                            userData: Map<String, dynamic>.from(snapshot.value as Map),
+                            uid: uid,
+                          ),
+                        );
+                      }
+                    }
+                  },
                   icon: const Icon(Icons.edit, color: Colors.white),
                 ),
               ],
@@ -116,6 +133,15 @@ class AppDrawer extends StatelessWidget {
                   () {
                     Get.back();
                     Get.to(() => SavedRecipesScreen());
+                  },
+                ),
+                _buildListTile(
+                  context,
+                  Icons.bookmark_outline,
+                  'Saved Posts',
+                  () {
+                    Get.back();
+                    Get.to(() => SavedPostsScreen());
                   },
                 ),
                 _buildListTile(context, Icons.history, 'Recipe History', () {
