@@ -1,4 +1,5 @@
 class RecipeModel {
+  final String? id; // Unique ID for recipes in Firebase
   final String name;
   final String preparationTime;
   final String calories;
@@ -9,6 +10,7 @@ class RecipeModel {
   final String servings;
 
   RecipeModel({
+    this.id,
     required this.name,
     required this.preparationTime,
     required this.calories,
@@ -124,6 +126,7 @@ class RecipeModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name,
       'preparationTime': preparationTime,
       'calories': calories,
@@ -137,6 +140,7 @@ class RecipeModel {
 
   factory RecipeModel.fromJson(Map<String, dynamic> json) {
     return RecipeModel(
+      id: json['id'],
       name: json['name'] ?? 'Recipe',
       preparationTime: json['preparationTime'] ?? '30 min',
       calories: json['calories'] ?? '350 kcal',
@@ -145,6 +149,31 @@ class RecipeModel {
       instructions: List<String>.from(json['instructions'] ?? []),
       imageUrl: json['imageUrl'],
       servings: json['servings'] ?? '4',
+    );
+  }
+
+  /// Create a copy of this recipe with modified fields
+  RecipeModel copyWith({
+    String? id,
+    String? name,
+    String? preparationTime,
+    String? calories,
+    String? description,
+    List<String>? ingredients,
+    List<String>? instructions,
+    String? imageUrl,
+    String? servings,
+  }) {
+    return RecipeModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      preparationTime: preparationTime ?? this.preparationTime,
+      calories: calories ?? this.calories,
+      description: description ?? this.description,
+      ingredients: ingredients ?? this.ingredients,
+      instructions: instructions ?? this.instructions,
+      imageUrl: imageUrl ?? this.imageUrl,
+      servings: servings ?? this.servings,
     );
   }
 }

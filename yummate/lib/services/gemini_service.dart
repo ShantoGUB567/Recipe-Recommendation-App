@@ -55,7 +55,7 @@ class GeminiService {
     final cuisineText = cuisine != null ? ' $cuisine' : '';
 
     return '''
-Generate 3 different${cuisineText} recipes using these ingredients: $ingredientList.
+Generate 3 different$cuisineText recipes using these ingredients: $ingredientList.
 
 For EACH recipe, provide the response in the following format:
 
@@ -92,7 +92,7 @@ Make each recipe unique, delicious and easy to follow! Separate each recipe with
 
       final prompt =
           '''
-Generate 3 different variations of${cuisineText} $recipeName recipes.
+Generate 3 different variations of$cuisineText $recipeName recipes.
 
 For EACH recipe variation, provide the response in the following format:
 
