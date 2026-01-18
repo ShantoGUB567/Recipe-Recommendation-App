@@ -12,6 +12,7 @@ import 'package:yummate/screens/features/saved_recipes_screen.dart';
 import 'package:yummate/screens/features/saved_posts_screen.dart';
 import 'package:yummate/screens/features/community_screen.dart';
 import 'package:yummate/screens/features/recipe_history_screen.dart';
+import 'package:yummate/screens/features/weekly_meal_planner_screen.dart';
 import 'package:yummate/services/session_service.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -147,6 +148,10 @@ class AppDrawer extends StatelessWidget {
                 _buildListTile(context, Icons.history, 'Recipe History', () {
                   Get.back();
                   Get.to(() => const SavedRecipeSessionsScreen());
+                }),
+                _buildListTile(context, Icons.calendar_today, 'Weekly Planner', () {
+                  Get.back();
+                  Get.to(() => const WeeklyMealPlannerScreen());
                 }),
                 // replaced 'My Ingredients' with Community feature
                 _buildListTile(context, Icons.group_rounded, 'Community', () {

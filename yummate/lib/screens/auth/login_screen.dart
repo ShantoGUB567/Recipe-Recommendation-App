@@ -1,23 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:yummate/core/theme/theme_controller.dart';
+import 'package:yummate/services/theme_service.dart';
+import 'package:yummate/services/profile_service.dart';
 import 'package:yummate/core/widgets/custom_text_field.dart';
 import 'package:yummate/core/widgets/primary_button.dart';
 import 'package:yummate/screens/auth/signup_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:yummate/screens/features/home_screen.dart';
+import 'package:yummate/screens/onboarding/onboarding_profile_screen.dart';
 import 'package:yummate/services/session_service.dart';
 
-class LoginScreen extends StatelessWidget {
-  LoginScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
-  final ThemeController themeController = Get.find<ThemeController>();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final ThemeService themeService = Get.find<ThemeService>();
+  late TextEditingController emailController;
+  late TextEditingController passwordController;
 
   final FirebaseAuth auth = FirebaseAuth.instance;
   final SessionService sessionService = SessionService();
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    emailController = TextEditingController();
+    passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   Future<void> loginUser() async {
     String email = emailController.text.trim();
@@ -32,6 +54,8 @@ class LoginScreen extends StatelessWidget {
       debugPrint("❌ Empty email or password");
       return;
     }
+
+    setState(() => _isLoading = true);
 
     try {
       debugPrint("📡 Attempting Firebase Login...");
@@ -71,13 +95,23 @@ class LoginScreen extends StatelessWidget {
 
       debugPrint("👤 Final userName: $userName");
 
-      Get.offAll(() => HomeScreen(userName: userName));
-      debugPrint("➡️ Navigated to HomeScreen");
+      // Check if user profile exists
+      final profileExists = await ProfileService.profileExists(userCredential.user!.uid);
+      
+      if (profileExists) {
+        Get.offAll(() => HomeScreen(userName: userName));
+        debugPrint("➡️ Navigated to HomeScreen (profile exists)");
+      } else {
+        Get.offAll(() => const OnboardingProfileScreen());
+        debugPrint("➡️ Navigated to OnboardingProfileScreen (profile missing)");
+      }
 
       Get.snackbar("Success", "Login successful!");
     } catch (e) {
       debugPrint("❌ Login Failed: $e");
       Get.snackbar("Login Failed", e.toString());
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
 
@@ -91,17 +125,18 @@ class LoginScreen extends StatelessWidget {
         elevation: 0,
         backgroundColor: Colors.transparent,
         actions: [
-          IconButton(
+          Obx(() => IconButton(
             icon: Icon(
-              themeController.isDarkMode.value
+              themeService.themeMode.value == ThemeMode.dark
                   ? Icons.wb_sunny_rounded
                   : Icons.nightlight_round_rounded,
             ),
             onPressed: () {
               debugPrint("🌓 Theme toggle pressed");
-              themeController.toggleTheme();
+              final isDark = themeService.themeMode.value == ThemeMode.dark;
+              themeService.setThemeMode(isDark ? ThemeMode.light : ThemeMode.dark);
             },
-          ),
+          )),
         ],
       ),
 
@@ -164,11 +199,9 @@ class LoginScreen extends StatelessWidget {
               const SizedBox(height: 10),
 
               PrimaryButton(
-                text: "Login",
-                onPressed: () async {
-                  debugPrint("▶️ Login button pressed");
-                  await loginUser();
-                },
+                text: _isLoading ? "Logging in..." : "Login",
+                onPressed: loginUser,
+                isLoading: _isLoading,
               ),
 
               const SizedBox(height: 20),
@@ -180,7 +213,7 @@ class LoginScreen extends StatelessWidget {
                   TextButton(
                     onPressed: () {
                       debugPrint("➡️ Going to SignupScreen");
-                      Get.to(() => SignupScreen());
+                      Get.to(() => const SignupScreen());
                     },
                     child: const Text("Sign Up"),
                   ),

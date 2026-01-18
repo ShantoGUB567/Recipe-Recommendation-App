@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yummate/core/theme/app_theme.dart';
-import 'package:yummate/core/theme/theme_controller.dart';
 import 'package:yummate/screens/onboarding/onboarding_screen.dart';
 import 'package:yummate/screens/features/home_screen.dart';
 import 'package:yummate/services/session_service.dart';
+import 'package:yummate/services/theme_service.dart';
 
 import 'firebase_options.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -33,27 +33,25 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeController themeController = Get.put(ThemeController());
+    Get.put(ThemeService());
 
     return Obx(
-      () => GetMaterialApp(
-        title: 'Yummate',
-        debugShowCheckedModeBanner: false,
-
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: themeController.isDarkMode.value
-            ? ThemeMode.dark
-            : ThemeMode.light,
-
-        // NEW: Use initialRoute instead of FutureBuilder
-        initialRoute: '/splash',
-        getPages: [
-          GetPage(name: '/splash', page: () => const SplashRouter()),
-          GetPage(name: '/onboarding', page: () => const OnboardingScreen()),
-          GetPage(name: '/home', page: () => const HomeScreen(userName: "")),
-        ],
-      ),
+      () {
+        final themeService = Get.find<ThemeService>();
+        return GetMaterialApp(
+          title: 'Yummate',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: themeService.themeMode.value,
+          initialRoute: '/splash',
+          getPages: [
+            GetPage(name: '/splash', page: () => const SplashRouter()),
+            GetPage(name: '/onboarding', page: () => const OnboardingScreen()),
+            GetPage(name: '/home', page: () => const HomeScreen(userName: "")),
+          ],
+        );
+      },
     );
   }
 }

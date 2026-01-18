@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:yummate/core/widgets/app_drawer.dart';
+import 'package:yummate/core/widgets/bottom_nav_bar.dart';
 import 'package:yummate/screens/generate_recipe_screen.dart';
 import 'package:yummate/screens/features/saved_recipes_screen.dart';
 import 'package:yummate/services/gemini_service.dart';
@@ -572,6 +573,7 @@ class _HomeScreenState extends State<HomeScreen>
           ],
         ),
       ),
+      bottomNavigationBar: BottomNavBar(currentIndex: 0, userName: widget.userName),
     );
   }
 

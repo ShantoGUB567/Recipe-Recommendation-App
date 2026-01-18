@@ -3,31 +3,59 @@ import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-import 'package:yummate/core/theme/theme_controller.dart';
+import 'package:yummate/services/theme_service.dart';
+import 'package:yummate/services/profile_service.dart';
 import 'package:yummate/core/widgets/custom_text_field.dart';
 import 'package:yummate/core/widgets/primary_button.dart';
 import 'package:yummate/screens/auth/login_screen.dart';
+import 'package:yummate/screens/onboarding/onboarding_profile_screen.dart';
 import 'package:yummate/services/session_service.dart';
 import 'package:yummate/screens/features/home_screen.dart';
 
-class SignupScreen extends StatelessWidget {
-  SignupScreen({super.key});
+class SignupScreen extends StatefulWidget {
+  const SignupScreen({super.key});
 
-  final ThemeController themeController = Get.find<ThemeController>();
+  @override
+  State<SignupScreen> createState() => _SignupScreenState();
+}
 
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController usernameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+class _SignupScreenState extends State<SignupScreen> {
+  final ThemeService themeService = Get.find<ThemeService>();
+
+  late TextEditingController nameController;
+  late TextEditingController usernameController;
+  late TextEditingController emailController;
+  late TextEditingController phoneController;
+  late TextEditingController passwordController;
+  late TextEditingController confirmPasswordController;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final DatabaseReference dbRef = FirebaseDatabase.instance.ref().child(
-    "users",
-  );
+  late DatabaseReference dbRef;
   final SessionService sessionService = SessionService();
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    nameController = TextEditingController();
+    usernameController = TextEditingController();
+    emailController = TextEditingController();
+    phoneController = TextEditingController();
+    passwordController = TextEditingController();
+    confirmPasswordController = TextEditingController();
+    dbRef = FirebaseDatabase.instance.ref().child("users");
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    usernameController.dispose();
+    emailController.dispose();
+    phoneController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   Future<void> signupUser() async {
     String name = nameController.text.trim();
@@ -60,6 +88,8 @@ class SignupScreen extends StatelessWidget {
       return;
     }
 
+    setState(() => _isLoading = true);
+
     try {
       // ✅ Create user in Firebase Auth
       UserCredential userCredential = await _auth
@@ -86,8 +116,13 @@ class SignupScreen extends StatelessWidget {
         backgroundColor: Colors.green,
       );
 
-      // Go directly to HomeScreen after signup
-      Get.offAll(() => HomeScreen(userName: name));
+      // Check if user profile exists, if not show onboarding
+      final profileExists = await ProfileService.profileExists(uid);
+      if (profileExists) {
+        Get.offAll(() => HomeScreen(userName: name));
+      } else {
+        Get.offAll(() => const OnboardingProfileScreen());
+      }
     } on FirebaseAuthException catch (e) {
       // Show structured auth error code and message
       Get.snackbar(
@@ -103,6 +138,8 @@ class SignupScreen extends StatelessWidget {
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
       );
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
 
@@ -114,13 +151,20 @@ class SignupScreen extends StatelessWidget {
         elevation: 0,
         backgroundColor: Colors.transparent,
         actions: [
-          IconButton(
-            icon: Icon(
-              themeController.isDarkMode.value
-                  ? Icons.wb_sunny_rounded
-                  : Icons.nightlight_round_rounded,
+          Obx(
+            () => IconButton(
+              icon: Icon(
+                themeService.themeMode.value == ThemeMode.dark
+                    ? Icons.wb_sunny_rounded
+                    : Icons.nightlight_round_rounded,
+              ),
+              onPressed: () {
+                final isDark = themeService.themeMode.value == ThemeMode.dark;
+                themeService.setThemeMode(
+                  isDark ? ThemeMode.light : ThemeMode.dark,
+                );
+              },
             ),
-            onPressed: themeController.toggleTheme,
           ),
         ],
       ),
@@ -133,10 +177,11 @@ class SignupScreen extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: Image.asset(
-                  'assets/images/logo.jpg',
-                  width: 80,
-                  height: 80,
-                  fit: BoxFit.cover,
+                  'assets/images/logo.png',
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  height:
+                      MediaQuery.of(context).size.width * 0.5 * (975 / 2025),
+                  fit: BoxFit.contain,
                 ),
               ),
 
@@ -204,8 +249,9 @@ class SignupScreen extends StatelessWidget {
               const SizedBox(height: 10),
 
               PrimaryButton(
-                text: "Create Account",
-                onPressed: signupUser, // ⬅ Firebase Signup Function
+                text: _isLoading ? "Creating Account..." : "Create Account",
+                onPressed: signupUser,
+                isLoading: _isLoading,
               ),
 
               const SizedBox(height: 20),
