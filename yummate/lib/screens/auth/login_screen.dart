@@ -6,7 +6,7 @@ import 'package:yummate/core/widgets/primary_button.dart';
 import 'package:yummate/screens/auth/signup_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:yummate/screens/features/home_screen.dart';
+import 'package:yummate/screens/features/home/screen/home_screen.dart';
 import 'package:yummate/services/session_service.dart';
 
 class LoginScreen extends StatelessWidget {

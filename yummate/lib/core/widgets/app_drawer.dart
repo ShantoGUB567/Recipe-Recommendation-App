@@ -3,16 +3,16 @@ import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:yummate/screens/auth/login_screen.dart';
-import 'package:yummate/screens/features/profile_screen.dart';
-import 'package:yummate/screens/features/edit_profile_screen.dart';
-import 'package:yummate/screens/features/home_screen.dart';
-import 'package:yummate/screens/features/settings_screen.dart';
-import 'package:yummate/screens/features/about_screen.dart';
-import 'package:yummate/screens/features/saved_recipes_screen.dart';
-import 'package:yummate/screens/features/saved_posts_screen.dart';
-import 'package:yummate/screens/features/community_screen.dart';
-import 'package:yummate/screens/features/recipe_history_screen.dart';
-import 'package:yummate/screens/features/weekly_meal_planner_screen.dart';
+import 'package:yummate/screens/features/profile/screen/profile_screen.dart';
+import 'package:yummate/screens/features/edit_profile/screen/edit_profile_screen.dart';
+import 'package:yummate/screens/features/home/screen/home_screen.dart';
+import 'package:yummate/screens/features/settings/screen/settings_screen.dart';
+import 'package:yummate/screens/features/about/screen/about_screen.dart';
+import 'package:yummate/screens/features/save_recipe/screen/saved_recipes_screen.dart';
+import 'package:yummate/screens/features/save_post/screen/saved_posts_screen.dart';
+import 'package:yummate/screens/features/community/screen/community_screen.dart';
+import 'package:yummate/screens/features/recipe_history/screen/recipe_history_screen.dart';
+import 'package:yummate/screens/features/meal_planner/screen/weekly_meal_planner_screen.dart';
 import 'package:yummate/services/session_service.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -63,7 +63,7 @@ class AppDrawer extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        userName,
+                        userName.isNotEmpty ? userName : 'User',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,
@@ -72,7 +72,7 @@ class AppDrawer extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        userEmail ?? "",
+                        userEmail?.isNotEmpty ?? false ? userEmail! : 'user@example.com',
                         style: const TextStyle(
                           color: Colors.white70,
                           fontSize: 12,

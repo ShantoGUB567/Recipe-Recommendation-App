@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'dart:developer' as developer;
 import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:yummate/core/theme/app_theme.dart';
 import 'package:yummate/services/theme_service.dart';
 import 'package:yummate/screens/onboarding/onboarding_screen.dart';
-import 'package:yummate/screens/features/home_screen.dart';
+import 'package:yummate/screens/features/home/screen/home_screen.dart';
 import 'package:yummate/services/session_service.dart';
 
 import 'firebase_options.dart';
@@ -107,6 +108,15 @@ class _SplashRouterState extends State<SplashRouter> {
           final userData = snapshot.value as Map<dynamic, dynamic>;
           userName = userData['name'] ?? userData['username'] ?? 'User';
         }
+
+        // Debug print user info
+        developer.log('User Info:', name: 'UserAuth');
+        developer.log('UID: ${currentUser.uid}', name: 'UserAuth');
+        developer.log('Email: ${currentUser.email}', name: 'UserAuth');
+        developer.log('Display Name: $userName', name: 'UserAuth');
+        debugPrint('[USER_AUTH] UID: ${currentUser.uid}');
+        debugPrint('[USER_AUTH] Email: ${currentUser.email}');
+        debugPrint('[USER_AUTH] Display Name: $userName');
 
         Future.delayed(const Duration(milliseconds: 300), () {
           Get.offAll(() => HomeScreen(userName: userName));
