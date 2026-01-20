@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:get/get.dart';
 import 'package:yummate/core/widgets/app_drawer.dart';
+import 'package:yummate/core/widgets/bottom_nav_bar.dart';
 import 'package:yummate/screens/auth/login_screen.dart';
 import 'package:yummate/screens/features/edit_profile_screen.dart';
 import 'package:yummate/services/session_service.dart';
@@ -371,6 +372,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
+      bottomNavigationBar: const BottomNavBar(currentIndex: 3),
     );
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:yummate/services/recipe_service.dart';import 'package:yummate/models/recipe_history_model.dart';import 'package:yummate/screens/generate_recipe_screen.dart';
 import 'package:intl/intl.dart';
 
@@ -62,14 +63,10 @@ class _SavedRecipeSessionsScreenState extends State<SavedRecipeSessionsScreen> {
       try {
         await _recipeService.clearAllRecipeHistory(user.uid);
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('All history cleared')),
-          );
+          EasyLoading.showSuccess('All history cleared');
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        EasyLoading.showError('Error: $e');
       }
     }
   }
@@ -83,13 +80,9 @@ class _SavedRecipeSessionsScreenState extends State<SavedRecipeSessionsScreen> {
         userId: user.uid,
         historyId: historyId,
       );
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('History entry deleted')),
-      );
+      EasyLoading.showSuccess('History entry deleted');
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      EasyLoading.showError('Error: $e');
     }
   }
 

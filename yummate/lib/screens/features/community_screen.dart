@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:yummate/models/post_model.dart';
 import 'package:yummate/core/widgets/post_widget.dart';
 import 'package:yummate/core/widgets/post_card.dart';
+import 'package:yummate/core/widgets/bottom_nav_bar.dart';
 
 class CommunityScreen extends StatefulWidget {
   const CommunityScreen({super.key});
@@ -120,6 +121,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
           );
         },
       ),
+      bottomNavigationBar: const BottomNavBar(currentIndex: 2),
     );
   }
 }

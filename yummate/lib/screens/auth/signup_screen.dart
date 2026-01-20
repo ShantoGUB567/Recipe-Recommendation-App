@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-import 'package:yummate/core/theme/theme_controller.dart';
+import 'package:yummate/services/theme_service.dart';
 import 'package:yummate/core/widgets/custom_text_field.dart';
 import 'package:yummate/core/widgets/primary_button.dart';
 import 'package:yummate/screens/auth/login_screen.dart';
@@ -13,7 +13,7 @@ import 'package:yummate/screens/features/home_screen.dart';
 class SignupScreen extends StatelessWidget {
   SignupScreen({super.key});
 
-  final ThemeController themeController = Get.find<ThemeController>();
+  final ThemeService themeService = Get.find<ThemeService>();
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
@@ -115,12 +115,17 @@ class SignupScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(
-            icon: Icon(
-              themeController.isDarkMode.value
+            icon: Obx(() => Icon(
+              themeService.themeMode.value == ThemeMode.dark
                   ? Icons.wb_sunny_rounded
                   : Icons.nightlight_round_rounded,
-            ),
-            onPressed: themeController.toggleTheme,
+            )),
+            onPressed: () {
+              final newMode = themeService.themeMode.value == ThemeMode.dark
+                  ? ThemeMode.light
+                  : ThemeMode.dark;
+              themeService.setThemeMode(newMode);
+            },
           ),
         ],
       ),
@@ -133,10 +138,10 @@ class SignupScreen extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: Image.asset(
-                  'assets/images/logo.jpg',
-                  width: 80,
-                  height: 80,
-                  fit: BoxFit.cover,
+                  'assets/images/logo.png',
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  height: MediaQuery.of(context).size.width * 0.5 * (975 / 2025),
+                  fit: BoxFit.contain,
                 ),
               ),
 

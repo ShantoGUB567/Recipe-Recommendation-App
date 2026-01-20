@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:yummate/services/recipe_service.dart';
 import 'package:yummate/screens/recipe_details_screen.dart';
 import 'package:yummate/models/saved_recipe_model.dart';
@@ -41,13 +42,9 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
         userId: user.uid,
         recipeId: recipeId,
       );
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Recipe removed from saved')),
-      );
+      EasyLoading.showSuccess('Recipe removed from saved');
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      EasyLoading.showError('Error: $e');
     }
   }
 

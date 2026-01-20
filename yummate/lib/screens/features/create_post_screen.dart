@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'dart:io';
 import 'package:yummate/models/post_model.dart';
 
@@ -57,9 +58,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error picking image: $e')),
-      );
+      EasyLoading.showError('Error picking image: $e');
     }
   }
 
@@ -71,9 +70,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       // You can implement firebase_storage later if needed
       return 'local_image_path'; // Placeholder
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error processing image: $e')),
-      );
+      EasyLoading.showError('Error processing image: $e');
       return null;
     }
   }
@@ -82,20 +79,17 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     final caption = _captionController.text.trim();
 
     if (caption.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please add a caption')),
-      );
+      EasyLoading.showError('Please add a caption');
       return;
     }
 
     setState(() => _isLoading = true);
+    EasyLoading.show(status: 'Creating post...');
 
     try {
       final user = _auth.currentUser;
       if (user == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please login to create a post')),
-        );
+        EasyLoading.showError('Please login to create a post');
         return;
       }
 
@@ -125,15 +119,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       // Also save to user's posts
       await _db.child('users').child(user.uid).child('posts').child(postId).set(true);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Post created successfully')),
-      );
+      EasyLoading.showSuccess('Post created successfully');
 
       Get.back();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error creating post: $e')),
-      );
+      EasyLoading.showError('Error creating post: $e');
     } finally {
       setState(() => _isLoading = false);
     }

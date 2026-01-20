@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:yummate/models/recipe_model.dart';
 import 'package:yummate/services/session_service.dart';
 import 'package:yummate/services/recipe_service.dart';
@@ -64,9 +65,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
   Future<void> _toggleSaveRecipe() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please login to save recipes')),
-      );
+      EasyLoading.showError('Please login to save recipes');
       return;
     }
 
@@ -85,9 +84,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
         }
         setState(() => isSaved = false);
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Recipe removed from saved')),
-          );
+          EasyLoading.showSuccess('Recipe removed from saved');
         }
       } else {
         await _recipeService.saveRecipe(
@@ -96,16 +93,12 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
         );
         setState(() => isSaved = true);
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Recipe saved successfully')),
-          );
+          EasyLoading.showSuccess('Recipe saved successfully');
         }
       }
     } catch (e) {
       print('Error toggling save: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      EasyLoading.showError('Error: $e');
     }
   }
 
