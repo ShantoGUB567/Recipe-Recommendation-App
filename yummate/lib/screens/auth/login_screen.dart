@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:yummate/core/theme/theme_controller.dart';
+import 'package:yummate/services/theme_service.dart';
 import 'package:yummate/core/widgets/custom_text_field.dart';
 import 'package:yummate/core/widgets/primary_button.dart';
 import 'package:yummate/screens/auth/signup_screen.dart';
@@ -12,7 +12,7 @@ import 'package:yummate/services/session_service.dart';
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
 
-  final ThemeController themeController = Get.find<ThemeController>();
+  final ThemeService themeService = Get.find<ThemeService>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
@@ -92,14 +92,17 @@ class LoginScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(
-            icon: Icon(
-              themeController.isDarkMode.value
+            icon: Obx(() => Icon(
+              themeService.themeMode.value == ThemeMode.dark
                   ? Icons.wb_sunny_rounded
                   : Icons.nightlight_round_rounded,
-            ),
+            )),
             onPressed: () {
               debugPrint("🌓 Theme toggle pressed");
-              themeController.toggleTheme();
+              final newMode = themeService.themeMode.value == ThemeMode.dark
+                  ? ThemeMode.light
+                  : ThemeMode.dark;
+              themeService.setThemeMode(newMode);
             },
           ),
         ],

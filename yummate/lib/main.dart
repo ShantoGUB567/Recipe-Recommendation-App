@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:yummate/core/theme/app_theme.dart';
-import 'package:yummate/core/theme/theme_controller.dart';
+import 'package:yummate/services/theme_service.dart';
 import 'package:yummate/screens/onboarding/onboarding_screen.dart';
 import 'package:yummate/screens/features/home_screen.dart';
 import 'package:yummate/services/session_service.dart';
@@ -11,6 +12,18 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+
+void _configEasyLoading() {
+  EasyLoading.instance
+    ..displayDuration = const Duration(milliseconds: 2000)
+    ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+    ..loadingStyle = EasyLoadingStyle.dark
+    ..indicatorSize = 45.0
+    ..radius = 10.0
+    ..maskColor = Colors.black.withValues(alpha: .5)
+    ..userInteractions = false
+    ..dismissOnTap = false;
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +38,8 @@ void main() async {
 
   await SessionService().init();
 
+  _configEasyLoading();
+
   runApp(MyApp());
 }
 
@@ -33,7 +48,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeController themeController = Get.put(ThemeController());
+    final ThemeService themeService = Get.put(ThemeService());
 
     return Obx(
       () => GetMaterialApp(
@@ -42,9 +57,7 @@ class MyApp extends StatelessWidget {
 
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
-        themeMode: themeController.isDarkMode.value
-            ? ThemeMode.dark
-            : ThemeMode.light,
+        themeMode: themeService.themeMode.value,
 
         // NEW: Use initialRoute instead of FutureBuilder
         initialRoute: '/splash',
@@ -53,6 +66,7 @@ class MyApp extends StatelessWidget {
           GetPage(name: '/onboarding', page: () => const OnboardingScreen()),
           GetPage(name: '/home', page: () => const HomeScreen(userName: "")),
         ],
+        builder: EasyLoading.init(),
       ),
     );
   }

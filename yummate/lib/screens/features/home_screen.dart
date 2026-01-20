@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:yummate/core/widgets/app_drawer.dart';
+import 'package:yummate/core/widgets/bottom_nav_bar.dart';
 import 'package:yummate/screens/generate_recipe_screen.dart';
 import 'package:yummate/screens/features/saved_recipes_screen.dart';
 import 'package:yummate/services/gemini_service.dart';
@@ -177,33 +179,7 @@ class _HomeScreenState extends State<HomeScreen>
 
       // Show loading indicator
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Row(
-            children: [
-              SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2,
-                ),
-              ),
-              SizedBox(width: 12),
-              Text(
-                'Detecting ingredients from image...',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
-          backgroundColor: Colors.deepOrange,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          duration: const Duration(seconds: 3),
-        ),
-      );
+      EasyLoading.show(status: 'Detecting ingredients from image...');
 
       // Detect ingredients from image
       try {
@@ -225,75 +201,14 @@ class _HomeScreenState extends State<HomeScreen>
             }
           });
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  const Icon(Icons.check_circle, color: Colors.white),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Found ${detectedIngredients.length} ingredient(s)!',
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: Colors.green,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          );
+          EasyLoading.showSuccess('Found ${detectedIngredients.length} ingredient(s)!');
         } else if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Row(
-                children: [
-                  Icon(Icons.info, color: Colors.white),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'No ingredients detected. Try a clearer image.',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: Colors.blue.shade700,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          );
+          EasyLoading.showInfo('No ingredients detected. Try a clearer image.');
         }
       } catch (e) {
         print('Error detecting ingredients: $e');
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  const Icon(Icons.error, color: Colors.white),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Error: ${e.toString()}',
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: Colors.red.shade700,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              duration: const Duration(seconds: 5),
-            ),
-          );
+          EasyLoading.showError('Error: ${e.toString()}');
         }
       }
     }
@@ -301,27 +216,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   Future<void> _searchForRecipe(String recipeName) async {
     if (recipeName.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Row(
-            children: [
-              Icon(Icons.warning_amber_rounded, color: Colors.white),
-              SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  "Please enter a recipe name to search!",
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: Colors.orange.shade700,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-      );
+      EasyLoading.showInfo('Please enter a recipe name to search!');
       return;
     }
 
@@ -346,27 +241,7 @@ class _HomeScreenState extends State<HomeScreen>
 
       searchController.clear();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              const Icon(Icons.error_outline, color: Colors.white),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  'Error: ${e.toString()}',
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: Colors.red.shade600,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-      );
+      EasyLoading.showError('Error: ${e.toString()}');
     } finally {
       setState(() => _isSearching = false);
     }
@@ -424,6 +299,7 @@ class _HomeScreenState extends State<HomeScreen>
         ],
       ),
       drawer: AppDrawer(userName: widget.userName),
+      bottomNavigationBar: BottomNavBar(currentIndex: 0),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -1112,18 +988,7 @@ class _HomeScreenState extends State<HomeScreen>
                         ? null
                         : () async {
                             if (ingredients.isEmpty && pickedImage == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: const Text(
-                                    "Add at least 1 ingredient!",
-                                  ),
-                                  backgroundColor: Colors.orange.shade700,
-                                  behavior: SnackBarBehavior.floating,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                              );
+                              EasyLoading.showInfo('Add at least 1 ingredient!');
                               return;
                             }
 
@@ -1151,13 +1016,7 @@ class _HomeScreenState extends State<HomeScreen>
                                 ),
                               );
                             } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Error: $e'),
-                                  backgroundColor: Colors.red.shade600,
-                                  behavior: SnackBarBehavior.floating,
-                                ),
-                              );
+                              EasyLoading.showError('Error: $e');
                             } finally {
                               setState(() => _isGenerating = false);
                             }
