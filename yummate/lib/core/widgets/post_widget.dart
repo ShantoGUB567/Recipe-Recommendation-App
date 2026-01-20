@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:yummate/screens/features/create_post_screen.dart';
+import 'package:yummate/screens/features/create_post/screen/create_post_screen.dart';
 
 class PostWidget extends StatelessWidget {
   const PostWidget({super.key});

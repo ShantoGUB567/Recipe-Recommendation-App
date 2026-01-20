@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:yummate/screens/features/home_screen.dart';
-import 'package:yummate/screens/features/weekly_meal_planner_screen.dart';
-import 'package:yummate/screens/features/community_screen.dart';
-import 'package:yummate/screens/features/profile_screen.dart';
+import 'package:yummate/screens/features/home/screen/home_screen.dart';
+import 'package:yummate/screens/features/meal_planner/screen/weekly_meal_planner_screen.dart';
+import 'package:yummate/screens/features/community/screen/community_screen.dart';
+import 'package:yummate/screens/features/profile/screen/profile_screen.dart';
 
 class BottomNavBar extends StatefulWidget {
   final int currentIndex;

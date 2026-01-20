@@ -8,7 +8,7 @@ import 'package:yummate/core/widgets/custom_text_field.dart';
 import 'package:yummate/core/widgets/primary_button.dart';
 import 'package:yummate/screens/auth/login_screen.dart';
 import 'package:yummate/services/session_service.dart';
-import 'package:yummate/screens/features/home_screen.dart';
+import 'package:yummate/screens/features/home/screen/home_screen.dart';
 
 class SignupScreen extends StatelessWidget {
   SignupScreen({super.key});
