@@ -218,7 +218,7 @@ class _WeeklyMealPlannerScreenState extends State<WeeklyMealPlannerScreen> {
   }
 
   void _generateShoppingList() {
-    EasyLoading.showSuccess('Shopping list generated for ${selectedDay}!');
+    EasyLoading.showSuccess('Shopping list generated for $selectedDay!');
   }
 
   @override
@@ -397,7 +397,7 @@ class _WeeklyMealPlannerScreenState extends State<WeeklyMealPlannerScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        ...meals.map((meal) => _buildMealCard(meal)).toList(),
+        ...meals.map((meal) => _buildMealCard(meal)),
       ],
     );
   }

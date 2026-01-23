@@ -180,7 +180,7 @@ class _PostCardState extends State<PostCard> {
 
   String _truncateCaption(String caption, {int maxLength = 150}) {
     if (caption.length > maxLength) {
-      return caption.substring(0, maxLength) + '...';
+      return '${caption.substring(0, maxLength)}...';
     }
     return caption;
   }
