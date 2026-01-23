@@ -27,16 +27,28 @@ class ProfileActionButtons extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: () {
               Get.to(
-                () => EditProfileScreen(
-                  userData: userData,
-                  uid: uid,
-                ),
+                () => const EditProfileScreen(),
               )?.then((_) => onRefresh());
             },
             icon: const Icon(Icons.edit_rounded),
             label: const Text("Edit Profile"),
           ),
           const SizedBox(height: 12),
+
+          // Add Additional Information Button (Used for debugging)
+          // ElevatedButton.icon(
+          //   onPressed: () {
+          //     Get.to(() => const AdditionalInformationScreen())
+          //         ?.then((_) => onRefresh());
+          //   },
+          //   icon: const Icon(Icons.person_outline_rounded),
+          //   label: const Text("Update Additional Information"),
+          //   style: ElevatedButton.styleFrom(
+          //     backgroundColor: const Color(0xFF7CB342),
+          //   ),
+          // ),
+          // const SizedBox(height: 12),
+
           OutlinedButton.icon(
             onPressed: () async {
               await FirebaseAuth.instance.signOut();

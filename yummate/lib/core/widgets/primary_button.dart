@@ -4,7 +4,7 @@ import 'package:yummate/core/theme/app_colors.dart';
 /// 🍟 Main soft UI button used across Yummate
 class PrimaryButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final bool isLoading;
 
   const PrimaryButton({

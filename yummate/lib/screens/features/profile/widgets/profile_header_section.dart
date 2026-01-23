@@ -71,10 +71,7 @@ class ProfileHeaderSection extends StatelessWidget {
           IconButton(
             onPressed: () {
               Get.to(
-                () => EditProfileScreen(
-                  userData: userData,
-                  uid: uid ?? '',
-                ),
+                () => const EditProfileScreen(),
               )?.then((_) => onRefresh());
             },
             icon: const Icon(Icons.edit, color: Colors.white),

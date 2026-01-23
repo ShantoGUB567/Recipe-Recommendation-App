@@ -6,7 +6,7 @@ import 'package:yummate/core/widgets/bottom_nav_bar.dart';
 import 'package:yummate/screens/features/profile/widgets/profile_header_section.dart';
 import 'package:yummate/screens/features/profile/widgets/profile_stats_section.dart';
 import 'package:yummate/screens/features/profile/widgets/profile_info_section.dart';
-import 'package:yummate/screens/features/profile/widgets/profile_preferences_section.dart';
+import 'package:yummate/screens/features/profile/widgets/profile_additional_info_section.dart';
 import 'package:yummate/screens/features/profile/widgets/profile_action_buttons.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -144,10 +144,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                       const SizedBox(height: 18),
 
-                      // Preferences
-                      ProfilePreferencesSection(userData: _userData ?? {}),
+                      // Additional Information
+                      ProfileAdditionalInfoSection(uid: _uid ?? ''),
 
                       const SizedBox(height: 32),
+
 
                       // Action Buttons
                       ProfileActionButtons(

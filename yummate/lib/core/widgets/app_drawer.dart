@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:yummate/screens/auth/login_screen.dart';
 import 'package:yummate/screens/features/profile/screen/profile_screen.dart';
 import 'package:yummate/screens/features/edit_profile/screen/edit_profile_screen.dart';
@@ -82,20 +81,10 @@ class AppDrawer extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  onPressed: () async {
-                    final uid = FirebaseAuth.instance.currentUser?.uid;
-                    if (uid != null) {
-                      final DatabaseReference db = FirebaseDatabase.instance.ref();
-                      final snapshot = await db.child('users').child(uid).get();
-                      if (snapshot.exists) {
-                        Get.to(
-                          () => EditProfileScreen(
-                            userData: Map<String, dynamic>.from(snapshot.value as Map),
-                            uid: uid,
-                          ),
-                        );
-                      }
-                    }
+                  onPressed: () {
+                    Get.to(
+                      () => const EditProfileScreen(),
+                    );
                   },
                   icon: const Icon(Icons.edit, color: Colors.white),
                 ),
