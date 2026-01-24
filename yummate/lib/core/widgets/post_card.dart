@@ -9,11 +9,7 @@ class PostCard extends StatefulWidget {
   final PostModel post;
   final VoidCallback onSaved;
 
-  const PostCard({
-    super.key,
-    required this.post,
-    required this.onSaved,
-  });
+  const PostCard({super.key, required this.post, required this.onSaved});
 
   @override
   State<PostCard> createState() => _PostCardState();
@@ -37,8 +33,11 @@ class _PostCardState extends State<PostCard> {
   Future<void> _checkLikeStatus() async {
     final user = _auth.currentUser;
     if (user != null) {
-      final snapshot =
-          await _db.child('posts').child(_post.id).child('likedBy').get();
+      final snapshot = await _db
+          .child('posts')
+          .child(_post.id)
+          .child('likedBy')
+          .get();
       if (snapshot.exists) {
         final likedBy = List<String>.from(snapshot.value as List);
         setState(() => _isLiked = likedBy.contains(user.uid));
@@ -127,9 +126,11 @@ class _PostCardState extends State<PostCard> {
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
     }
   }
 
@@ -162,9 +163,11 @@ class _PostCardState extends State<PostCard> {
       }
       widget.onSaved();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
     }
   }
 
@@ -200,7 +203,9 @@ class _PostCardState extends State<PostCard> {
               children: [
                 CircleAvatar(
                   radius: 20,
-                  backgroundColor: const Color(0xFF7CB342).withOpacity(0.2),
+                  backgroundColor: const Color(
+                    0xFF7CB342,
+                  ).withValues(alpha: 0.2),
                   child: Text(
                     (_post.userName.isNotEmpty)
                         ? _post.userName[0].toUpperCase()
@@ -235,10 +240,7 @@ class _PostCardState extends State<PostCard> {
                 ),
                 PopupMenuButton(
                   itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      value: 'report',
-                      child: Text('Report'),
-                    ),
+                    const PopupMenuItem(value: 'report', child: Text('Report')),
                   ],
                   onSelected: (value) {
                     if (value == 'report') {
@@ -297,9 +299,7 @@ class _PostCardState extends State<PostCard> {
                     return Container(
                       height: 200,
                       color: Colors.grey.shade200,
-                      child: const Center(
-                        child: Icon(Icons.broken_image),
-                      ),
+                      child: const Center(child: Icon(Icons.broken_image)),
                     );
                   },
                 ),
@@ -396,10 +396,7 @@ class _PostCardState extends State<PostCard> {
         children: [
           Icon(icon, color: color, size: 20),
           const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(fontSize: 11, color: color),
-          ),
+          Text(label, style: TextStyle(fontSize: 11, color: color)),
         ],
       ),
     );

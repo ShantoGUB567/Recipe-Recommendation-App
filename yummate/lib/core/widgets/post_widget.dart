@@ -19,7 +19,7 @@ class PostWidget extends StatelessWidget {
           border: Border.all(color: Colors.grey.shade300),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -30,7 +30,7 @@ class PostWidget extends StatelessWidget {
             // User photo placeholder
             CircleAvatar(
               radius: 20,
-              backgroundColor: const Color(0xFF7CB342).withOpacity(0.2),
+              backgroundColor: const Color(0xFF7CB342).withValues(alpha: 0.2),
               child: const Icon(
                 Icons.person,
                 color: Color(0xFF7CB342),
@@ -42,17 +42,17 @@ class PostWidget extends StatelessWidget {
             // Text field
             Expanded(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Text(
                   "Share Your Kitchen's Story",
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Colors.grey, fontSize: 14),
                 ),
               ),
             ),

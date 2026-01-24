@@ -100,10 +100,7 @@ class _GenerateRecipeScreenState extends State<GenerateRecipeScreen> {
               background: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [
-                      const Color(0xFFFF6B35),
-                      Colors.orange.shade600,
-                    ],
+                    colors: [const Color(0xFFFF6B35), Colors.orange.shade600],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -116,20 +113,15 @@ class _GenerateRecipeScreenState extends State<GenerateRecipeScreen> {
           SliverPadding(
             padding: const EdgeInsets.all(16),
             sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final recipe = widget.recipes[index];
-                  return _buildModernRecipeCard(recipe, index);
-                },
-                childCount: widget.recipes.length,
-              ),
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final recipe = widget.recipes[index];
+                return _buildModernRecipeCard(recipe, index);
+              }, childCount: widget.recipes.length),
             ),
           ),
 
           // Bottom spacing
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 80),
-          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 80)),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -138,10 +130,7 @@ class _GenerateRecipeScreenState extends State<GenerateRecipeScreen> {
         icon: const Icon(Icons.add, color: Colors.white),
         label: const Text(
           'New Recipe',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
     );
@@ -155,7 +144,7 @@ class _GenerateRecipeScreenState extends State<GenerateRecipeScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),

@@ -48,11 +48,12 @@ class _PostDetailDialogState extends State<PostDetailDialog> {
       }
 
       final userData = await _db.child('users').child(user.uid).get();
-      final userName = userData.exists 
+      final userName = userData.exists
           ? (userData.value as Map)['name'] ?? 'Anonymous'
           : 'Anonymous';
 
-      final commentId = _db.child('posts').child(_post.id).child('comments').push().key ?? '';
+      final commentId =
+          _db.child('posts').child(_post.id).child('comments').push().key ?? '';
       final comment = CommentModel(
         id: commentId,
         userId: user.uid,
@@ -74,23 +75,28 @@ class _PostDetailDialogState extends State<PostDetailDialog> {
       if (_rating > 0) {
         final currentRatings = _post.comments.map((c) => c.rating).toList();
         currentRatings.add(_rating);
-        final avgRating = currentRatings.reduce((a, b) => a + b) / currentRatings.length;
-        
+        final avgRating =
+            currentRatings.reduce((a, b) => a + b) / currentRatings.length;
+
         await _db.child('posts').child(_post.id).update({
           'averageRating': avgRating,
         });
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Review added successfully')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Review added successfully')),
+        );
+      }
 
       _commentController.clear();
       setState(() => _rating = 0);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
     } finally {
       setState(() => _isSubmitting = false);
     }
@@ -149,7 +155,9 @@ class _PostDetailDialogState extends State<PostDetailDialog> {
                           ),
                         ),
                         Text(
-                          DateFormat('MMM dd, yyyy • hh:mm a').format(_post.createdAt),
+                          DateFormat(
+                            'MMM dd, yyyy • hh:mm a',
+                          ).format(_post.createdAt),
                           style: const TextStyle(
                             color: Colors.white70,
                             fontSize: 12,
@@ -198,13 +206,19 @@ class _PostDetailDialogState extends State<PostDetailDialog> {
                       Expanded(
                         child: Text(
                           '👍 ${_post.likeCount}',
-                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
                       Expanded(
                         child: Text(
                           '👎 ${_post.unlikeCount}',
-                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
                           textAlign: TextAlign.right,
                         ),
                       ),
@@ -235,7 +249,10 @@ class _PostDetailDialogState extends State<PostDetailDialog> {
                     const SizedBox(height: 12),
                     const Text(
                       'Reviews & Ratings',
-                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     SizedBox(
@@ -254,8 +271,9 @@ class _PostDetailDialogState extends State<PostDetailDialog> {
                                   children: [
                                     CircleAvatar(
                                       radius: 16,
-                                      backgroundColor:
-                                          const Color(0xFF7CB342).withOpacity(0.2),
+                                      backgroundColor: const Color(
+                                        0xFF7CB342,
+                                      ).withValues(alpha: 0.2),
                                       child: Text(
                                         (comment.userName.isNotEmpty)
                                             ? comment.userName[0].toUpperCase()
@@ -266,7 +284,8 @@ class _PostDetailDialogState extends State<PostDetailDialog> {
                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             comment.userName,
@@ -283,7 +302,10 @@ class _PostDetailDialogState extends State<PostDetailDialog> {
                                                   (i) => Icon(
                                                     Icons.star,
                                                     size: 14,
-                                                    color: i < comment.rating.toInt()
+                                                    color:
+                                                        i <
+                                                            comment.rating
+                                                                .toInt()
                                                         ? Colors.amber
                                                         : Colors.grey.shade300,
                                                   ),
@@ -369,8 +391,9 @@ class _PostDetailDialogState extends State<PostDetailDialog> {
                               width: 16,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
                               ),
                             )
                           : const Text(
