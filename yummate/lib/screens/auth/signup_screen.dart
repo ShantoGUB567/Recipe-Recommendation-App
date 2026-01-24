@@ -115,11 +115,13 @@ class SignupScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(
-            icon: Obx(() => Icon(
-              themeService.themeMode.value == ThemeMode.dark
-                  ? Icons.wb_sunny_rounded
-                  : Icons.nightlight_round_rounded,
-            )),
+            icon: Obx(
+              () => Icon(
+                themeService.themeMode.value == ThemeMode.dark
+                    ? Icons.wb_sunny_rounded
+                    : Icons.nightlight_round_rounded,
+              ),
+            ),
             onPressed: () {
               final newMode = themeService.themeMode.value == ThemeMode.dark
                   ? ThemeMode.light
@@ -140,7 +142,8 @@ class SignupScreen extends StatelessWidget {
                 child: Image.asset(
                   'assets/images/logo.png',
                   width: MediaQuery.of(context).size.width * 0.5,
-                  height: MediaQuery.of(context).size.width * 0.5 * (975 / 2025),
+                  height:
+                      MediaQuery.of(context).size.width * 0.5 * (975 / 2025),
                   fit: BoxFit.contain,
                 ),
               ),
@@ -160,7 +163,7 @@ class SignupScreen extends StatelessWidget {
                 style: TextStyle(
                   color: Theme.of(
                     context,
-                  ).textTheme.bodyMedium!.color!.withOpacity(0.7),
+                  ).textTheme.bodyMedium!.color!.withValues(alpha: 0.7),
                 ),
               ),
 
@@ -223,7 +226,7 @@ class SignupScreen extends StatelessWidget {
                     style: TextStyle(
                       color: Theme.of(
                         context,
-                      ).textTheme.bodyMedium!.color!.withOpacity(0.7),
+                      ).textTheme.bodyMedium!.color!.withValues(alpha: 0.7),
                     ),
                   ),
                   TextButton(

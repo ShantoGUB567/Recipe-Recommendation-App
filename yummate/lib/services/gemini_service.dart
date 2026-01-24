@@ -1,5 +1,6 @@
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:io';
 
 class GeminiService {
@@ -86,25 +87,31 @@ Make each recipe unique, delicious and easy to follow! Separate each recipe with
   Future<String> searchRecipe({
     required String recipeName,
     String? cuisine,
+    String? targetCalories,
+    String? description,
   }) async {
     try {
       final cuisineText = cuisine != null ? ' $cuisine' : '';
+      final caloriesText = targetCalories != null
+          ? '\nTarget Calories: Approximately $targetCalories per serving'
+          : '';
+      final descText = description != null ? '\nDescription: $description' : '';
 
       final prompt =
           '''
-Generate 3 different variations of$cuisineText $recipeName recipes.
+Generate a detailed$cuisineText $recipeName recipe.$caloriesText$descText
 
-For EACH recipe variation, provide the response in the following format:
+Provide the response in the following format:
 
-**Recipe Name:** [Recipe name with variation]
+**Recipe Name:** $recipeName
 
 **Preparation Time:** [Total approximate time including all prep, marination, and cooking - format like: 1 Hr 10 Min or 30 Min or 45 Min]
 
 **Servings:** [Number of servings like: 4 or 6]
 
-**Calories:** [Total calories as number only, like: 780]
+**Calories:** ${targetCalories ?? '[Total calories as number only, like: 780]'}
 
-**Description:** [Brief description of the dish]
+**Description:** ${description ?? '[Brief description of the dish]'}
 
 **Ingredients:**
 - [quantity] [unit] [ingredient name] (e.g., "4 large baking potatoes" or "3 tablespoons olive oil, divided")
@@ -114,9 +121,7 @@ For EACH recipe variation, provide the response in the following format:
 **Instructions:**
 1. [Step-by-step cooking instructions]
 
----
-
-Make each variation unique, authentic, delicious and easy to follow! Separate each recipe with "---".
+Make it authentic, delicious and easy to follow!
 ''';
 
       final response = await _model.generateContent([Content.text(prompt)]);
@@ -128,9 +133,9 @@ Make each variation unique, authentic, delicious and easy to follow! Separate ea
 
   Future<List<String>> identifyIngredientsFromImage(File imageFile) async {
     try {
-      print('Reading image file: ${imageFile.path}');
+      debugPrint('Reading image file: ${imageFile.path}');
       final imageBytes = await imageFile.readAsBytes();
-      print('Image bytes read: ${imageBytes.length} bytes');
+      debugPrint('Image bytes read: ${imageBytes.length} bytes');
 
       // Determine image MIME type from file extension
       String mimeType = 'image/jpeg';
@@ -142,7 +147,7 @@ Make each variation unique, authentic, delicious and easy to follow! Separate ea
       } else if (extension == 'webp') {
         mimeType = 'image/webp';
       }
-      print('Using MIME type: $mimeType');
+      debugPrint('Using MIME type: $mimeType');
 
       final imagePart = DataPart(mimeType, imageBytes);
 
@@ -152,14 +157,14 @@ Provide ONLY the ingredient names, one per line.
 Do not add numbers, bullets, or descriptions.
 Just simple ingredient names like: tomato, onion, chicken, rice''';
 
-      print('Sending request to Gemini vision model...');
+      debugPrint('Sending request to Gemini vision model...');
       final response = await _visionModel.generateContent([
         Content.multi([TextPart(prompt), imagePart]),
       ]);
 
-      print('Received response from Gemini');
+      debugPrint('Received response from Gemini');
       final text = response.text ?? '';
-      print('Response text: $text');
+      debugPrint('Response text: $text');
 
       if (text.isEmpty) {
         throw Exception('No response from Gemini vision model');
@@ -174,10 +179,10 @@ Just simple ingredient names like: tomato, onion, chicken, rice''';
           .where((line) => line.isNotEmpty && line.length > 1)
           .toList();
 
-      print('Parsed ingredients: $ingredients');
+      debugPrint('Parsed ingredients: $ingredients');
       return ingredients;
     } catch (e) {
-      print('Error in identifyIngredientsFromImage: $e');
+      debugPrint('Error in identifyIngredientsFromImage: $e');
       throw Exception('Error identifying ingredients: $e');
     }
   }

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:yummate/services/recipe_service.dart';import 'package:yummate/models/recipe_history_model.dart';import 'package:yummate/screens/generate_recipe_screen.dart';
+import 'package:yummate/services/recipe_service.dart';
+import 'package:yummate/models/recipe_history_model.dart';
+import 'package:yummate/screens/generate_recipe_screen.dart';
 import 'package:intl/intl.dart';
 
 class SavedRecipeSessionsScreen extends StatefulWidget {
@@ -29,7 +31,9 @@ class _SavedRecipeSessionsScreenState extends State<SavedRecipeSessionsScreen> {
     if (user != null) {
       setState(() {
         _userId = user.uid;
-        _historyStream = _recipeService.streamRecipeHistory(user.uid).asBroadcastStream();
+        _historyStream = _recipeService
+            .streamRecipeHistory(user.uid)
+            .asBroadcastStream();
       });
     }
   }
@@ -237,7 +241,7 @@ class _SavedRecipeSessionsScreenState extends State<SavedRecipeSessionsScreen> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: typeColor.withOpacity(0.1),
+                      color: typeColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
@@ -271,7 +275,7 @@ class _SavedRecipeSessionsScreenState extends State<SavedRecipeSessionsScreen> {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: typeColor.withOpacity(0.2),
+                                color: typeColor.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
@@ -339,10 +343,10 @@ class _SavedRecipeSessionsScreenState extends State<SavedRecipeSessionsScreen> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF7CB342).withOpacity(0.1),
+                      color: const Color(0xFF7CB342).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(6),
                       border: Border.all(
-                        color: const Color(0xFF7CB342).withOpacity(0.3),
+                        color: const Color(0xFF7CB342).withValues(alpha: 0.3),
                       ),
                     ),
                     child: Text(

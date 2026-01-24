@@ -122,11 +122,7 @@ class _HomeIngredientsTabState extends State<HomeIngredientsTab> {
                         ),
                         child: Column(
                           children: [
-                            Icon(
-                              Icons.image,
-                              size: 32,
-                              color: Colors.green,
-                            ),
+                            Icon(Icons.image, size: 32, color: Colors.green),
                             const SizedBox(height: 12),
                             const Text(
                               'Gallery',
@@ -162,8 +158,8 @@ class _HomeIngredientsTabState extends State<HomeIngredientsTab> {
 
       try {
         debugPrint('Starting ingredient detection from image...');
-        final detectedIngredients =
-            await widget.geminiService.identifyIngredientsFromImage(File(image.path));
+        final detectedIngredients = await widget.geminiService
+            .identifyIngredientsFromImage(File(image.path));
 
         debugPrint(
           'Detection complete. Found ${detectedIngredients.length} ingredients',
@@ -207,7 +203,7 @@ class _HomeIngredientsTabState extends State<HomeIngredientsTab> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -221,7 +217,7 @@ class _HomeIngredientsTabState extends State<HomeIngredientsTab> {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.1),
+                        color: Colors.green.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
@@ -415,10 +411,13 @@ class _HomeIngredientsTabState extends State<HomeIngredientsTab> {
                       ),
                       child: IconButton(
                         onPressed: () {
-                          if (widget.ingredientController.text.trim().isNotEmpty) {
+                          if (widget.ingredientController.text
+                              .trim()
+                              .isNotEmpty) {
                             setState(() {
-                              ingredients
-                                  .add(widget.ingredientController.text.trim());
+                              ingredients.add(
+                                widget.ingredientController.text.trim(),
+                              );
                               widget.ingredientController.clear();
                               widget.onIngredientsChanged(ingredients);
                             });
@@ -484,22 +483,25 @@ class _HomeIngredientsTabState extends State<HomeIngredientsTab> {
                         ? null
                         : () async {
                             if (ingredients.isEmpty && pickedImage == null) {
-                              EasyLoading.showInfo('Add at least 1 ingredient!');
+                              EasyLoading.showInfo(
+                                'Add at least 1 ingredient!',
+                              );
                               return;
                             }
 
                             setState(() => _isGenerating = true);
 
                             try {
-                              final response =
-                                  await widget.geminiService.generateRecipe(
-                                ingredients: ingredients,
-                                cuisine: selectedCuisine,
-                                imageFile: pickedImage,
-                              );
+                              final response = await widget.geminiService
+                                  .generateRecipe(
+                                    ingredients: ingredients,
+                                    cuisine: selectedCuisine,
+                                    imageFile: pickedImage,
+                                  );
 
-                              final recipes =
-                                  RecipeModel.parseMultipleRecipes(response);
+                              final recipes = RecipeModel.parseMultipleRecipes(
+                                response,
+                              );
 
                               Get.to(
                                 () => GenerateRecipeScreen(

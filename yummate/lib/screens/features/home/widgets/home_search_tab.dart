@@ -75,7 +75,7 @@ class _HomeSearchTabState extends State<HomeSearchTab> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -89,7 +89,7 @@ class _HomeSearchTabState extends State<HomeSearchTab> {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: Colors.deepOrange.withOpacity(0.1),
+                        color: Colors.deepOrange.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
@@ -196,7 +196,9 @@ class _HomeSearchTabState extends State<HomeSearchTab> {
                     onPressed: _isSearching
                         ? null
                         : () {
-                            if (widget.searchController.text.trim().isNotEmpty) {
+                            if (widget.searchController.text
+                                .trim()
+                                .isNotEmpty) {
                               _searchForRecipe(widget.searchController.text);
                             }
                           },
@@ -293,7 +295,7 @@ class _HomeSearchTabState extends State<HomeSearchTab> {
           border: Border.all(color: Colors.grey.shade300),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: Colors.black.withValues(alpha: 0.03),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),

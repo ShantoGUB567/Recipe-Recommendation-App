@@ -44,7 +44,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           });
         }
       } catch (e) {
-        print('Error loading user data: $e');
+        debugPrint('Error loading user data: $e');
       }
     }
   }
@@ -99,6 +99,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       }
 
       final postId = _db.child('posts').push().key ?? '';
+      debugPrint('Creating post with ID: $postId');
+
       final post = PostModel(
         id: postId,
         userId: user.uid,
@@ -114,15 +116,27 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         averageRating: 0.0,
       );
 
-      await _db.child('posts').child(postId).set(post.toJson());
-      
+      final postData = post.toJson();
+      debugPrint('Post data to save: $postData');
+
+      await _db.child('posts').child(postId).set(postData);
+      debugPrint('Post saved to database successfully');
+
       // Also save to user's posts
-      await _db.child('users').child(user.uid).child('posts').child(postId).set(true);
+      await _db
+          .child('users')
+          .child(user.uid)
+          .child('posts')
+          .child(postId)
+          .set(true);
+      debugPrint('Post linked to user profile');
 
       EasyLoading.showSuccess('Post created successfully');
 
+      // Go back to community screen
       Get.back();
     } catch (e) {
+      debugPrint('Error creating post: $e');
       EasyLoading.showError('Error creating post: $e');
     } finally {
       setState(() => _isLoading = false);
@@ -138,156 +152,278 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF0F2F5),
       appBar: AppBar(
-        title: const Text('Create Post'),
-        backgroundColor: const Color(0xFF7CB342),
-        foregroundColor: Colors.white,
+        title: const Text(
+          'Create Post',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+        ),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black87,
         elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // User info
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundImage: _userPhotoUrl != null
-                      ? NetworkImage(_userPhotoUrl!)
-                      : null,
-                  child: _userPhotoUrl == null
-                      ? Text(
-                          (_userName?.isNotEmpty ?? false)
-                              ? _userName![0].toUpperCase()
-                              : 'U',
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                        )
-                      : null,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: TextButton(
+              onPressed: _isLoading ? null : _createPost,
+              style: TextButton.styleFrom(
+                backgroundColor: _isLoading
+                    ? Colors.grey.shade300
+                    : const Color(0xFFFF6B35),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 8,
                 ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _userName ?? 'Loading...',
-                      style: const TextStyle(
-                        fontSize: 16,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: _isLoading
+                  ? const SizedBox(
+                      height: 16,
+                      width: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                  : const Text(
+                      'Post',
+                      style: TextStyle(
+                        fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const Text(
-                      'Share your recipe',
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ],
             ),
-            const SizedBox(height: 20),
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Divider
+          Divider(height: 1, color: Colors.grey.shade300),
 
-            // Caption input
-            TextField(
-              controller: _captionController,
-              maxLines: 6,
-              decoration: InputDecoration(
-                hintText: "Share Your Kitchen's Story",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Colors.grey),
-                ),
-                contentPadding: const EdgeInsets.all(12),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Image preview
-            if (_selectedImage != null)
-              Container(
-                height: 300,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  image: DecorationImage(
-                    image: FileImage(_selectedImage!),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                child: Align(
-                  alignment: Alignment.topRight,
-                  child: IconButton(
-                    onPressed: () {
-                      setState(() => _selectedImage = null);
-                    },
-                    icon: const Icon(Icons.close, color: Colors.white),
-                    style: IconButton.styleFrom(
-                      backgroundColor: Colors.black.withOpacity(0.5),
-                    ),
-                  ),
-                ),
-              )
-            else
-              GestureDetector(
-                onTap: _pickImage,
-                child: Container(
-                  height: 300,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade300, width: 2),
-                    color: Colors.grey.shade50,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.image_outlined,
-                        size: 60,
-                        color: Colors.grey.shade400,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Tap to add image',
-                        style: TextStyle(color: Colors.grey.shade600),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            const SizedBox(height: 24),
-
-            // Post button
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: _isLoading ? null : _createPost,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF7CB342),
-                  disabledBackgroundColor: Colors.grey,
-                ),
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // User info section
+                  Container(
+                    color: Colors.white,
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        // User Avatar with gradient
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              (_userName?.isNotEmpty ?? false)
+                                  ? _userName![0].toUpperCase()
+                                  : 'U',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: 20,
+                              ),
+                            ),
+                          ),
                         ),
-                      )
-                    : const Text(
-                        'Post',
-                        style: TextStyle(
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _userName ?? 'Loading...',
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.public,
+                                    size: 12,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Public',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Caption input - Facebook style
+                  Container(
+                    color: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    child: TextField(
+                      controller: _captionController,
+                      maxLines: null,
+                      minLines: 5,
+                      maxLength: 5000,
+                      autofocus: true,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black87,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: "What's cooking today?",
+                        hintStyle: TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                          color: Colors.grey.shade500,
+                        ),
+                        border: InputBorder.none,
+                        counterStyle: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 12,
                         ),
                       ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // Image preview section
+                  if (_selectedImage != null)
+                    Container(
+                      color: Colors.white,
+                      padding: const EdgeInsets.all(12),
+                      child: Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.file(
+                              _selectedImage!,
+                              width: double.infinity,
+                              height: 350,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Positioned(
+                            top: 8,
+                            right: 8,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 8,
+                                    spreadRadius: 2,
+                                  ),
+                                ],
+                              ),
+                              child: IconButton(
+                                onPressed: () {
+                                  setState(() => _selectedImage = null);
+                                },
+                                icon: const Icon(
+                                  Icons.close,
+                                  color: Colors.black87,
+                                  size: 20,
+                                ),
+                                padding: const EdgeInsets.all(8),
+                                constraints: const BoxConstraints(),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  const SizedBox(height: 8),
+
+                  // Add to post section
+                  Container(
+                    color: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    child: Row(
+                      children: [
+                        const Text(
+                          'Add to your post',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const Spacer(),
+                        // Photo/Video button
+                        InkWell(
+                          onTap: _pickImage,
+                          borderRadius: BorderRadius.circular(8),
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: _selectedImage == null
+                                  ? const Color(0xFFFF6B35).withOpacity(0.1)
+                                  : Colors.grey.shade100,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.image,
+                                  color: _selectedImage == null
+                                      ? const Color(0xFFFF6B35)
+                                      : Colors.grey.shade600,
+                                  size: 24,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Photo',
+                                  style: TextStyle(
+                                    color: _selectedImage == null
+                                        ? const Color(0xFFFF6B35)
+                                        : Colors.grey.shade600,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

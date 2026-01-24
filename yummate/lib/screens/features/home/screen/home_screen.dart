@@ -8,7 +8,6 @@ import 'package:yummate/core/widgets/bottom_nav_bar.dart';
 import 'package:yummate/screens/features/save_recipe/screen/saved_recipes_screen.dart';
 import 'package:yummate/services/gemini_service.dart';
 import 'package:yummate/screens/features/home/widgets/home_hero_section.dart';
-import 'package:yummate/screens/features/home/widgets/home_quick_access_section.dart';
 import 'package:yummate/screens/features/home/widgets/home_search_tab.dart';
 import 'package:yummate/screens/features/home/widgets/home_ingredients_tab.dart';
 
@@ -66,7 +65,8 @@ class _HomeScreenState extends State<HomeScreen>
 
         if (snapshot.exists) {
           final userData = snapshot.value as Map<dynamic, dynamic>;
-          final fetchedName = userData['name'] ?? userData['username'] ?? 'User';
+          final fetchedName =
+              userData['name'] ?? userData['username'] ?? 'User';
           final fetchedEmail = userData['email'] as String?;
 
           debugPrint('[HOME_SCREEN] Fetched from Firebase:');
@@ -83,7 +83,9 @@ class _HomeScreenState extends State<HomeScreen>
           debugPrint('[HOME_SCREEN] No user data found in Firebase');
           if (mounted) {
             setState(() {
-              _displayName = widget.userName.isNotEmpty ? widget.userName : 'User';
+              _displayName = widget.userName.isNotEmpty
+                  ? widget.userName
+                  : 'User';
               _userEmail = currentUser.email;
             });
           }
@@ -92,7 +94,9 @@ class _HomeScreenState extends State<HomeScreen>
         debugPrint('[HOME_SCREEN] Error fetching user data: $e');
         if (mounted) {
           setState(() {
-            _displayName = widget.userName.isNotEmpty ? widget.userName : 'User';
+            _displayName = widget.userName.isNotEmpty
+                ? widget.userName
+                : 'User';
             _userEmail = currentUser.email;
           });
         }
@@ -169,12 +173,7 @@ class _HomeScreenState extends State<HomeScreen>
             // Hero Section
             HomeHeroSection(displayName: _displayName),
 
-            const SizedBox(height: 20),
-
-            // Quick Access Section
-            const HomeQuickAccessSection(),
-
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
 
             // Tab Section
             Padding(
@@ -200,12 +199,12 @@ class _HomeScreenState extends State<HomeScreen>
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
                           BoxShadow(
-                            color: Colors.white.withOpacity(0.5),
+                            color: Colors.white.withValues(alpha: 0.5),
                             blurRadius: 8,
                             offset: const Offset(0, -2),
                           ),

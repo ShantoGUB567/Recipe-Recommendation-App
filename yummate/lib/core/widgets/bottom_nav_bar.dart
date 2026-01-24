@@ -9,11 +9,7 @@ class BottomNavBar extends StatefulWidget {
   final int currentIndex;
   final String? userName;
 
-  const BottomNavBar({
-    super.key,
-    this.currentIndex = 0,
-    this.userName,
-  });
+  const BottomNavBar({super.key, this.currentIndex = 0, this.userName});
 
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
@@ -43,60 +39,65 @@ class _BottomNavBarState extends State<BottomNavBar> {
         break;
       case 1:
         // Planner
-        Get.offAll(
-          () => const WeeklyMealPlannerScreen(),
-          popGesture: false,
-        );
+        Get.offAll(() => const WeeklyMealPlannerScreen(), popGesture: false);
         break;
       case 2:
         // Community
-        Get.offAll(
-          () => CommunityScreen(),
-          popGesture: false,
-        );
+        Get.offAll(() => CommunityScreen(), popGesture: false);
         break;
       case 3:
         // Profile
-        Get.offAll(
-          () => const ProfileScreen(),
-          popGesture: false,
-        );
+        Get.offAll(() => const ProfileScreen(), popGesture: false);
         break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: _currentIndex,
-      onTap: _onTabTapped,
-      type: BottomNavigationBarType.fixed,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      selectedItemColor: const Color(0xFF7CB342),
-      unselectedItemColor: Colors.grey.shade500,
-      elevation: 8,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home_outlined),
-          activeIcon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.calendar_today_outlined),
-          activeIcon: Icon(Icons.calendar_today),
-          label: 'Planner',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.group_outlined),
-          activeIcon: Icon(Icons.group),
-          label: 'Community',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person_outline),
-          activeIcon: Icon(Icons.person),
-          label: 'Profile',
-        ),
-      ],
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: _onTabTapped,
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Colors.white,
+        selectedItemColor: const Color(0xFFFF6B35),
+        unselectedItemColor: Colors.grey.shade500,
+        selectedFontSize: 12,
+        unselectedFontSize: 11,
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+        elevation: 0,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_today_outlined),
+            activeIcon: Icon(Icons.calendar_today),
+            label: 'Planner',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.group_outlined),
+            activeIcon: Icon(Icons.group),
+            label: 'Community',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+      ),
     );
   }
 }
