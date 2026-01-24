@@ -43,7 +43,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           });
         }
       } catch (e) {
-        print('Error loading user data: $e');
+        debugPrint('Error loading user data: $e');
       }
     }
   }
@@ -57,9 +57,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error picking image: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error picking image: $e')));
+      }
     }
   }
 
@@ -71,9 +73,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       // You can implement firebase_storage later if needed
       return 'local_image_path'; // Placeholder
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error processing image: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error processing image: $e')));
       return null;
     }
   }
@@ -82,9 +84,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     final caption = _captionController.text.trim();
 
     if (caption.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please add a caption')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please add a caption')));
       return;
     }
 
@@ -121,19 +123,27 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       );
 
       await _db.child('posts').child(postId).set(post.toJson());
-      
+
       // Also save to user's posts
-      await _db.child('users').child(user.uid).child('posts').child(postId).set(true);
+      await _db
+          .child('users')
+          .child(user.uid)
+          .child('posts')
+          .child(postId)
+          .set(true);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Post created successfully')),
-      );
-
-      Get.back();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Post created successfully')),
+        );
+        Get.back();
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error creating post: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error creating post: $e')));
+      }
     } finally {
       setState(() => _isLoading = false);
     }
@@ -172,7 +182,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                           (_userName?.isNotEmpty ?? false)
                               ? _userName![0].toUpperCase()
                               : 'U',
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         )
                       : null,
                 ),
@@ -232,7 +245,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     },
                     icon: const Icon(Icons.close, color: Colors.white),
                     style: IconButton.styleFrom(
-                      backgroundColor: Colors.black.withOpacity(0.5),
+                      backgroundColor: Colors.black.withValues(alpha: 0.5),
                     ),
                   ),
                 ),
@@ -283,7 +296,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         width: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
                         ),
                       )
                     : const Text(

@@ -13,7 +13,7 @@ class RecipeService {
   static const uuid = Uuid();
 
   // ========== Saved Recipes ==========
-  
+
   /// Save a recipe for the current user
   Future<void> saveRecipe({
     required String userId,
@@ -28,13 +28,20 @@ class RecipeService {
         savedAt: DateTime.now(),
       );
 
+      print('💾 Saving recipe: ${recipe.name} for user: $userId');
+      print('💾 Recipe ID: $recipeId');
+      print('💾 Path: users/$userId/saved_recipes/$recipeId');
+
       await _db
           .child('users')
           .child(userId)
           .child('saved_recipes')
           .child(recipeId)
           .set(savedRecipe.toJson());
+
+      print('✅ Recipe saved successfully');
     } catch (e) {
+      print('❌ Error saving recipe: $e');
       throw Exception('Error saving recipe: $e');
     }
   }
@@ -69,11 +76,11 @@ class RecipeService {
 
       final recipes = <SavedRecipeModel>[];
       final data = snapshot.value as Map<dynamic, dynamic>;
-      
+
       data.forEach((key, value) {
-        recipes.add(SavedRecipeModel.fromJson(
-          Map<String, dynamic>.from(value as Map),
-        ));
+        recipes.add(
+          SavedRecipeModel.fromJson(Map<String, dynamic>.from(value as Map)),
+        );
       });
 
       return recipes;
@@ -97,7 +104,7 @@ class RecipeService {
       if (!snapshot.exists) return false;
 
       final data = snapshot.value as Map<dynamic, dynamic>;
-      
+
       for (var entry in data.entries) {
         final recipe = (entry.value as Map)['recipe'] as Map<dynamic, dynamic>;
         if (recipe['name'] == recipeName) {
@@ -130,6 +137,11 @@ class RecipeService {
         createdAt: DateTime.now(),
       );
 
+      print('💾 Saving recipe history: $query ($type) for user: $userId');
+      print('💾 History ID: $historyId');
+      print('💾 Number of recipes: ${recipes.length}');
+      print('💾 Path: users/$userId/recipe_history/$historyId');
+
       await _db
           .child('users')
           .child(userId)
@@ -137,8 +149,10 @@ class RecipeService {
           .child(historyId)
           .set(history.toJson());
 
+      print('✅ Recipe history saved successfully');
       return historyId;
     } catch (e) {
+      print('❌ Error saving recipe history: $e');
       throw Exception('Error saving recipe history: $e');
     }
   }
@@ -157,7 +171,7 @@ class RecipeService {
 
       final history = <RecipeHistoryEntry>[];
       final data = snapshot.value as Map<dynamic, dynamic>;
-      
+
       // Sort by date descending (most recent first)
       final entries = data.entries.toList();
       entries.sort((a, b) {
@@ -171,9 +185,11 @@ class RecipeService {
       });
 
       for (var entry in entries) {
-        history.add(RecipeHistoryEntry.fromJson(
-          Map<String, dynamic>.from(entry.value as Map),
-        ));
+        history.add(
+          RecipeHistoryEntry.fromJson(
+            Map<String, dynamic>.from(entry.value as Map),
+          ),
+        );
       }
 
       return history;
@@ -215,11 +231,7 @@ class RecipeService {
   /// Clear all recipe history for a user
   Future<void> clearAllRecipeHistory(String userId) async {
     try {
-      await _db
-          .child('users')
-          .child(userId)
-          .child('recipe_history')
-          .remove();
+      await _db.child('users').child(userId).child('recipe_history').remove();
     } catch (e) {
       throw Exception('Error clearing recipe history: $e');
     }
@@ -227,50 +239,108 @@ class RecipeService {
 
   /// Stream saved recipes for real-time updates
   Stream<List<SavedRecipeModel>> streamSavedRecipes(String userId) {
+    print('🔄 Setting up saved recipes stream for user: $userId');
     return _db
         .child('users')
         .child(userId)
         .child('saved_recipes')
         .onValue
         .map((event) {
-      if (!event.snapshot.exists) return [];
+          print('📥 Saved recipes event received');
+          if (!event.snapshot.exists) {
+            print('⚠️ No saved recipes found');
+            return <SavedRecipeModel>[];
+          }
 
-      final recipes = <SavedRecipeModel>[];
-      final data = event.snapshot.value as Map<dynamic, dynamic>;
-      
-      data.forEach((key, value) {
-        recipes.add(SavedRecipeModel.fromJson(
-          Map<String, dynamic>.from(value as Map),
-        ));
-      });
+          final recipes = <SavedRecipeModel>[];
+          final data = event.snapshot.value;
+          print('📦 Raw data type: ${data.runtimeType}');
+          print('📦 Raw data: $data');
 
-      return recipes;
-    });
+          if (data == null) {
+            print('⚠️ Data is null');
+            return <SavedRecipeModel>[];
+          }
+
+          try {
+            final dataMap = data as Map<dynamic, dynamic>;
+            dataMap.forEach((key, value) {
+              try {
+                final recipe = SavedRecipeModel.fromJson(
+                  Map<String, dynamic>.from(value as Map),
+                );
+                recipes.add(recipe);
+                print('✅ Loaded saved recipe: ${recipe.recipe.name}');
+              } catch (e) {
+                print('❌ Error parsing saved recipe: $e');
+                print('❌ Value: $value');
+              }
+            });
+          } catch (e) {
+            print('❌ Error processing saved recipes data: $e');
+          }
+
+          print('📊 Total saved recipes loaded: ${recipes.length}');
+          return recipes;
+        })
+        .handleError((error) {
+          print('❌ Stream error in streamSavedRecipes: $error');
+          return <SavedRecipeModel>[];
+        });
   }
 
   /// Stream recipe history for real-time updates
   Stream<List<RecipeHistoryEntry>> streamRecipeHistory(String userId) {
+    print('🔄 Setting up recipe history stream for user: $userId');
     return _db
         .child('users')
         .child(userId)
         .child('recipe_history')
         .onValue
         .map((event) {
-      if (!event.snapshot.exists) return [];
+          print('📥 Recipe history event received');
+          if (!event.snapshot.exists) {
+            print('⚠️ No recipe history found');
+            return <RecipeHistoryEntry>[];
+          }
 
-      final history = <RecipeHistoryEntry>[];
-      final data = event.snapshot.value as Map<dynamic, dynamic>;
-      
-      data.forEach((key, value) {
-        history.add(RecipeHistoryEntry.fromJson(
-          Map<String, dynamic>.from(value as Map),
-        ));
-      });
+          final history = <RecipeHistoryEntry>[];
+          final data = event.snapshot.value;
+          print('📦 Raw data type: ${data.runtimeType}');
+          print('📦 Raw data: $data');
 
-      // Sort by date descending (most recent first)
-      history.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          if (data == null) {
+            print('⚠️ Data is null');
+            return <RecipeHistoryEntry>[];
+          }
 
-      return history;
-    });
+          try {
+            final dataMap = data as Map<dynamic, dynamic>;
+            dataMap.forEach((key, value) {
+              try {
+                final entry = RecipeHistoryEntry.fromJson(
+                  Map<String, dynamic>.from(value as Map),
+                );
+                history.add(entry);
+                print('✅ Loaded history entry: ${entry.query} (${entry.type})');
+              } catch (e) {
+                print('❌ Error parsing history entry: $e');
+                print('❌ Value: $value');
+              }
+            });
+          } catch (e) {
+            print('❌ Error processing history data: $e');
+          }
+
+          // Sort by date descending (most recent first)
+          history.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+          print('📊 Total history entries loaded: ${history.length}');
+          return history;
+        })
+        .handleError((error) {
+          print('❌ Stream error in streamRecipeHistory: $error');
+          return <RecipeHistoryEntry>[];
+        });
   }
 }

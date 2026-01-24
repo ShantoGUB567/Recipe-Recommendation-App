@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:yummate/services/recipe_service.dart';import 'package:yummate/models/recipe_history_model.dart';import 'package:yummate/screens/generate_recipe_screen.dart';
+import 'package:yummate/services/recipe_service.dart';
+import 'package:yummate/models/recipe_history_model.dart';
+import 'package:yummate/screens/generate_recipe_screen.dart';
 import 'package:intl/intl.dart';
 
 class SavedRecipeSessionsScreen extends StatefulWidget {
@@ -26,10 +28,15 @@ class _SavedRecipeSessionsScreenState extends State<SavedRecipeSessionsScreen> {
   void _initializeStream() {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
+      print('🔍 Initializing recipe history stream for user: ${user.uid}');
       setState(() {
         _userId = user.uid;
-        _historyStream = _recipeService.streamRecipeHistory(user.uid).asBroadcastStream();
+        _historyStream = _recipeService
+            .streamRecipeHistory(user.uid)
+            .asBroadcastStream();
       });
+    } else {
+      print('❌ No user logged in');
     }
   }
 
@@ -62,14 +69,16 @@ class _SavedRecipeSessionsScreenState extends State<SavedRecipeSessionsScreen> {
       try {
         await _recipeService.clearAllRecipeHistory(user.uid);
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('All history cleared')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('All history cleared')));
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        }
       }
     }
   }
@@ -83,13 +92,17 @@ class _SavedRecipeSessionsScreenState extends State<SavedRecipeSessionsScreen> {
         userId: user.uid,
         historyId: historyId,
       );
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('History entry deleted')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('History entry deleted')));
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
     }
   }
 
@@ -147,6 +160,40 @@ class _SavedRecipeSessionsScreenState extends State<SavedRecipeSessionsScreen> {
       body: StreamBuilder<List<RecipeHistoryEntry>>(
         stream: _historyStream,
         builder: (context, snapshot) {
+          print('📊 Recipe History Stream State: ${snapshot.connectionState}');
+          print('📊 Has Data: ${snapshot.hasData}');
+          print('📊 Data Length: ${snapshot.data?.length ?? 0}');
+          if (snapshot.hasError) {
+            print('❌ Stream Error: ${snapshot.error}');
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    size: 80,
+                    color: Colors.red.shade400,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Error loading recipe history',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.red.shade600,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    snapshot.error.toString(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                  ),
+                ],
+              ),
+            );
+          }
+
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -244,7 +291,7 @@ class _SavedRecipeSessionsScreenState extends State<SavedRecipeSessionsScreen> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: typeColor.withOpacity(0.1),
+                      color: typeColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
@@ -278,7 +325,7 @@ class _SavedRecipeSessionsScreenState extends State<SavedRecipeSessionsScreen> {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: typeColor.withOpacity(0.2),
+                                color: typeColor.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
@@ -346,10 +393,10 @@ class _SavedRecipeSessionsScreenState extends State<SavedRecipeSessionsScreen> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF7CB342).withOpacity(0.1),
+                      color: const Color(0xFF7CB342).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(6),
                       border: Border.all(
-                        color: const Color(0xFF7CB342).withOpacity(0.3),
+                        color: const Color(0xFF7CB342).withValues(alpha: 0.3),
                       ),
                     ),
                     child: Text(

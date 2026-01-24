@@ -18,7 +18,7 @@ void main() async {
   try {
     await dotenv.load(fileName: '.env');
   } catch (e) {
-    print('Could not load .env file: $e');
+    debugPrint('Could not load .env file: $e');
   }
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -51,7 +51,10 @@ class MyApp extends StatelessWidget {
         getPages: [
           GetPage(name: '/splash', page: () => const SplashRouter()),
           GetPage(name: '/onboarding', page: () => const OnboardingScreen()),
-          GetPage(name: '/home', page: () => const HomeScreen(userName: "")),
+          GetPage(
+            name: '/home',
+            page: () => const HomeScreen(userName: ""),
+          ),
         ],
       ),
     );
@@ -111,8 +114,6 @@ class _SplashRouterState extends State<SplashRouter> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: CircularProgressIndicator()),
-    );
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }

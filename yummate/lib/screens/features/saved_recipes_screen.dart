@@ -25,10 +25,13 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
   void _initializeStream() {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
+      print('🔍 Initializing saved recipes stream for user: ${user.uid}');
       setState(() {
         _userId = user.uid;
         _savedRecipesStream = _recipeService.streamSavedRecipes(user.uid);
       });
+    } else {
+      print('❌ No user logged in');
     }
   }
 
@@ -41,13 +44,17 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
         userId: user.uid,
         recipeId: recipeId,
       );
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Recipe removed from saved')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Recipe removed from saved')),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
     }
   }
 
@@ -91,6 +98,40 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
       body: StreamBuilder<List<SavedRecipeModel>>(
         stream: _savedRecipesStream,
         builder: (context, snapshot) {
+          print('📊 Saved Recipes Stream State: ${snapshot.connectionState}');
+          print('📊 Has Data: ${snapshot.hasData}');
+          print('📊 Data Length: ${snapshot.data?.length ?? 0}');
+          if (snapshot.hasError) {
+            print('❌ Stream Error: ${snapshot.error}');
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    size: 80,
+                    color: Colors.red.shade400,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Error loading saved recipes',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.red.shade600,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    snapshot.error.toString(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                  ),
+                ],
+              ),
+            );
+          }
+
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -117,10 +158,7 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
                   const SizedBox(height: 8),
                   Text(
                     'Save recipes to view them here',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade500,
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
                   ),
                 ],
               ),
@@ -138,11 +176,10 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
               return Card(
                 child: ListTile(
                   leading: CircleAvatar(
-                    backgroundColor: const Color(0xFFFF6B35).withOpacity(0.2),
-                    child: const Icon(
-                      Icons.bookmark,
-                      color: Color(0xFFFF6B35),
-                    ),
+                    backgroundColor: const Color(
+                      0xFFFF6B35,
+                    ).withValues(alpha: 0.2),
+                    child: const Icon(Icons.bookmark, color: Color(0xFFFF6B35)),
                   ),
                   title: Text(
                     recipe.name,
@@ -164,8 +201,7 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
                             Text('Remove'),
                           ],
                         ),
-                        onTap: () =>
-                            _removeSavedRecipe(savedRecipe.id),
+                        onTap: () => _removeSavedRecipe(savedRecipe.id),
                       ),
                     ],
                   ),
@@ -173,9 +209,8 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => RecipeDetailsScreen(
-                          recipe: recipe,
-                        ),
+                        builder: (context) =>
+                            RecipeDetailsScreen(recipe: recipe),
                       ),
                     );
                   },

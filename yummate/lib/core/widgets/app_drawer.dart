@@ -84,12 +84,15 @@ class AppDrawer extends StatelessWidget {
                   onPressed: () async {
                     final uid = FirebaseAuth.instance.currentUser?.uid;
                     if (uid != null) {
-                      final DatabaseReference db = FirebaseDatabase.instance.ref();
+                      final DatabaseReference db = FirebaseDatabase.instance
+                          .ref();
                       final snapshot = await db.child('users').child(uid).get();
                       if (snapshot.exists) {
                         Get.to(
                           () => EditProfileScreen(
-                            userData: Map<String, dynamic>.from(snapshot.value as Map),
+                            userData: Map<String, dynamic>.from(
+                              snapshot.value as Map,
+                            ),
                             uid: uid,
                           ),
                         );
@@ -174,7 +177,7 @@ class AppDrawer extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: ListTile(
-              tileColor: Colors.red.withOpacity(0.06),
+              tileColor: Colors.red.withValues(alpha: 0.06),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -200,7 +203,7 @@ class AppDrawer extends StatelessWidget {
   ) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: Colors.deepOrange.withOpacity(0.12),
+        backgroundColor: Colors.deepOrange.withValues(alpha: 0.12),
         child: Icon(icon, color: Colors.deepOrange),
       ),
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),

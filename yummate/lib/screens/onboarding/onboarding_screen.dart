@@ -76,7 +76,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Container(color: Colors.black),
 
           // Dark overlay for better visibility
-          Container(color: Colors.black.withOpacity(0.4)),
+          Container(color: Colors.black.withValues(alpha: 0.4)),
 
           // Content
           SafeArea(
@@ -121,7 +121,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 height: 1.3,
                                 shadows: [
                                   Shadow(
-                                    color: Colors.black.withOpacity(0.5),
+                                    color: Colors.black.withValues(alpha: 0.5),
                                     blurRadius: 10,
                                   ),
                                 ],

@@ -103,9 +103,9 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
       }
     } catch (e) {
       print('Error toggling save: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 
@@ -442,7 +442,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: color.withOpacity(0.3),
+                  color: color.withValues(alpha: 0.3),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),

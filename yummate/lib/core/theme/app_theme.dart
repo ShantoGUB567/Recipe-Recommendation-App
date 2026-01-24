@@ -36,7 +36,7 @@ class AppTheme {
         borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide.none,
       ),
-      hintStyle: TextStyle(color: AppColors.lightText.withOpacity(0.5)),
+      hintStyle: TextStyle(color: AppColors.lightText.withValues(alpha: 0.5)),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
@@ -83,7 +83,7 @@ class AppTheme {
         borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide.none,
       ),
-      hintStyle: TextStyle(color: AppColors.darkText.withOpacity(0.5)),
+      hintStyle: TextStyle(color: AppColors.darkText.withValues(alpha: 0.5)),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
