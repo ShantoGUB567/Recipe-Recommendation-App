@@ -10,7 +10,6 @@ import 'package:yummate/screens/features/about/screen/about_screen.dart';
 import 'package:yummate/screens/features/save_recipe/screen/saved_recipes_screen.dart';
 import 'package:yummate/screens/features/save_post/screen/saved_posts_screen.dart';
 import 'package:yummate/screens/features/community/screen/community_screen.dart';
-import 'package:yummate/screens/features/recipe_history/screen/recipe_history_screen.dart';
 import 'package:yummate/screens/features/meal_planner/screen/weekly_meal_planner_screen.dart';
 import 'package:yummate/services/session_service.dart';
 
@@ -71,7 +70,9 @@ class AppDrawer extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        userEmail?.isNotEmpty ?? false ? userEmail! : 'user@example.com',
+                        userEmail?.isNotEmpty ?? false
+                            ? userEmail!
+                            : 'user@example.com',
                         style: const TextStyle(
                           color: Colors.white70,
                           fontSize: 12,
@@ -82,9 +83,7 @@ class AppDrawer extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: () {
-                    Get.to(
-                      () => const EditProfileScreen(),
-                    );
+                    Get.to(() => const EditProfileScreen());
                   },
                   icon: const Icon(Icons.edit, color: Colors.white),
                 ),
@@ -134,10 +133,6 @@ class AppDrawer extends StatelessWidget {
                     Get.to(() => SavedPostsScreen());
                   },
                 ),
-                _buildListTile(context, Icons.history, 'Recipe History', () {
-                  Get.back();
-                  Get.to(() => const SavedRecipeSessionsScreen());
-                }),
                 _buildListTile(
                   context,
                   Icons.calendar_today_rounded,
@@ -173,7 +168,7 @@ class AppDrawer extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: ListTile(
-              tileColor: Colors.red.withOpacity(0.06),
+              tileColor: Colors.red.withValues(alpha: 0.06),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -199,7 +194,7 @@ class AppDrawer extends StatelessWidget {
   ) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: Colors.deepOrange.withOpacity(0.12),
+        backgroundColor: Colors.deepOrange.withValues(alpha: 0.12),
         child: Icon(icon, color: Colors.deepOrange),
       ),
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),

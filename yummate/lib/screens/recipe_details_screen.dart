@@ -20,7 +20,6 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
   final SessionService _sessionService = SessionService();
   final RecipeService _recipeService = RecipeService();
   bool isSaved = false;
-  bool _isLoadingSaveStatus = true;
 
   @override
   void initState() {
@@ -41,14 +40,10 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
         );
         setState(() {
           isSaved = saved;
-          _isLoadingSaveStatus = false;
         });
       } catch (e) {
-        print('Error checking save status: $e');
-        setState(() => _isLoadingSaveStatus = false);
+        debugPrint('Error checking save status: $e');
       }
-    } else {
-      setState(() => _isLoadingSaveStatus = false);
     }
   }
 
@@ -69,36 +64,60 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
       return;
     }
 
+    EasyLoading.show(status: 'Processing...');
+
     try {
       if (isSaved) {
         // Find the recipe ID and remove it
         final savedRecipes = await _recipeService.getSavedRecipes(user.uid);
+        bool found = false;
         for (var saved in savedRecipes) {
           if (saved.recipe.name == widget.recipe.name) {
             await _recipeService.removeSavedRecipe(
               userId: user.uid,
               recipeId: saved.id,
             );
+            found = true;
             break;
           }
         }
-        setState(() => isSaved = false);
         if (mounted) {
-          EasyLoading.showSuccess('Recipe removed from saved');
+          setState(() => isSaved = false);
+          EasyLoading.showSuccess(
+            found
+                ? 'Recipe removed from saved'
+                : 'Recipe not found in saved list',
+          );
         }
       } else {
+        // Ensure recipe has required fields
+        debugPrint('Saving recipe: ${widget.recipe.name}');
+        debugPrint('Recipe ID: ${widget.recipe.id}');
+        debugPrint('User ID: ${user.uid}');
+
         await _recipeService.saveRecipe(
           userId: user.uid,
           recipe: widget.recipe,
         );
-        setState(() => isSaved = true);
+
+        // Verify it was saved by checking immediately
+        final savedRecipes = await _recipeService.getSavedRecipes(user.uid);
+        debugPrint('✅ Total saved recipes after save: ${savedRecipes.length}');
+        for (var saved in savedRecipes) {
+          debugPrint('   - ${saved.recipe.name} (ID: ${saved.id})');
+        }
+
         if (mounted) {
-          EasyLoading.showSuccess('Recipe saved successfully');
+          setState(() => isSaved = true);
+          EasyLoading.showSuccess('Recipe saved successfully!');
         }
       }
-    } catch (e) {
-      print('Error toggling save: $e');
-      EasyLoading.showError('Error: $e');
+    } catch (e, stackTrace) {
+      debugPrint('Error toggling save: $e');
+      debugPrint('Stack trace: $stackTrace');
+      if (mounted) {
+        EasyLoading.showError('Failed to save recipe: ${e.toString()}');
+      }
     }
   }
 
@@ -149,18 +168,6 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        actions: [
-          if (!_isLoadingSaveStatus)
-            IconButton(
-              icon: Icon(
-                isSaved ? Icons.bookmark : Icons.bookmark_border,
-                color: Colors.white,
-                size: 28,
-              ),
-              onPressed: _toggleSaveRecipe,
-              tooltip: isSaved ? 'Remove from saved' : 'Save recipe',
-            ),
-        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -435,7 +442,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: color.withOpacity(0.3),
+                  color: color.withValues(alpha: 0.3),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:yummate/services/recipe_service.dart';
@@ -88,11 +89,20 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
       body: StreamBuilder<List<SavedRecipeModel>>(
         stream: _savedRecipesStream,
         builder: (context, snapshot) {
+          debugPrint('🔄 StreamBuilder state: ${snapshot.connectionState}');
+          debugPrint('🔄 Has data: ${snapshot.hasData}');
+          debugPrint('🔄 Data count: ${snapshot.data?.length ?? 0}');
+          debugPrint('🔄 Has error: ${snapshot.hasError}');
+          if (snapshot.hasError) {
+            debugPrint('❌ Stream error: ${snapshot.error}');
+          }
+
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            debugPrint('⚠️ Showing empty state');
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -114,10 +124,7 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
                   const SizedBox(height: 8),
                   Text(
                     'Save recipes to view them here',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade500,
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
                   ),
                 ],
               ),
@@ -125,6 +132,10 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
           }
 
           final savedRecipes = snapshot.data!;
+          debugPrint('✅ Displaying ${savedRecipes.length} saved recipes');
+          for (var i = 0; i < savedRecipes.length; i++) {
+            debugPrint('   ${i + 1}. ${savedRecipes[i].recipe.name}');
+          }
 
           return ListView.separated(
             padding: const EdgeInsets.all(12),
@@ -135,11 +146,10 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
               return Card(
                 child: ListTile(
                   leading: CircleAvatar(
-                    backgroundColor: const Color(0xFFFF6B35).withOpacity(0.2),
-                    child: const Icon(
-                      Icons.bookmark,
-                      color: Color(0xFFFF6B35),
-                    ),
+                    backgroundColor: const Color(
+                      0xFFFF6B35,
+                    ).withValues(alpha: 0.2),
+                    child: const Icon(Icons.bookmark, color: Color(0xFFFF6B35)),
                   ),
                   title: Text(
                     recipe.name,
@@ -161,8 +171,7 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
                             Text('Remove'),
                           ],
                         ),
-                        onTap: () =>
-                            _removeSavedRecipe(savedRecipe.id),
+                        onTap: () => _removeSavedRecipe(savedRecipe.id),
                       ),
                     ],
                   ),
@@ -170,9 +179,8 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => RecipeDetailsScreen(
-                          recipe: recipe,
-                        ),
+                        builder: (context) =>
+                            RecipeDetailsScreen(recipe: recipe),
                       ),
                     );
                   },

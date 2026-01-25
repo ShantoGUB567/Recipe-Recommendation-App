@@ -37,7 +37,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: ListTile(
               leading: const Icon(Icons.palette_rounded),
               title: const Text('Theme'),
-              subtitle: Obx(() => Text(_getThemeModeLabel(_themeService.themeMode.value))),
+              subtitle: Obx(
+                () => Text(_getThemeModeLabel(_themeService.themeMode.value)),
+              ),
               onTap: () {
                 _showThemeOptions(context);
               },
@@ -103,30 +105,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const Text(
                 'Select Theme',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
               Obx(
                 () => Column(
                   children: [
-                    _themeOption(
-                      'System Mode',
-                      '🖥️',
-                      ThemeMode.system,
-                    ),
-                    _themeOption(
-                      'Light Mode',
-                      '☀️',
-                      ThemeMode.light,
-                    ),
-                    _themeOption(
-                      'Dark Mode',
-                      '🌙',
-                      ThemeMode.dark,
-                    ),
+                    _themeOption('System Mode', '🖥️', ThemeMode.system),
+                    _themeOption('Light Mode', '☀️', ThemeMode.light),
+                    _themeOption('Dark Mode', '🌙', ThemeMode.dark),
                   ],
                 ),
               ),
@@ -149,7 +136,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF7CB342).withOpacity(0.2) : Colors.grey.shade100,
+            color: isSelected
+                ? const Color(0xFF7CB342).withValues(alpha: 0.2)
+                : Colors.grey.shade100,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSelected ? const Color(0xFF7CB342) : Colors.transparent,
@@ -158,10 +147,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           child: Row(
             children: [
-              Text(
-                emoji,
-                style: const TextStyle(fontSize: 24),
-              ),
+              Text(emoji, style: const TextStyle(fontSize: 24)),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -169,7 +155,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                    color: isSelected ? const Color(0xFF7CB342) : Colors.black87,
+                    color: isSelected
+                        ? const Color(0xFF7CB342)
+                        : Colors.black87,
                   ),
                 ),
               ),

@@ -15,24 +15,36 @@ class AdditionalInformationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(AdditionalInfoController());
 
-    return WillPopScope(
-      onWillPop: () async => false,
+    return PopScope(
+      canPop: false,
       child: Scaffold(
         appBar: AppBar(
-          automaticallyImplyLeading: false,
+          leading: Obx(
+            () => controller.currentPage.value > 0
+                ? IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: controller.previousPage,
+                  )
+                : const SizedBox.shrink(),
+          ),
           title: const Text('Additional Information'),
           centerTitle: true,
           elevation: 0,
-          backgroundColor: Colors.transparent,
+          backgroundColor: Colors.white,
+          foregroundColor: const Color(0xFFFF6B35),
         ),
         body: Column(
           children: [
-            Obx(() => LinearProgressIndicator(
-              value: (controller.currentPage.value + 1) / 6,
-              minHeight: 4,
-              backgroundColor: Colors.grey[300],
-              valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF7CB342)),
-            )),
+            Obx(
+              () => LinearProgressIndicator(
+                value: (controller.currentPage.value + 1) / 6,
+                minHeight: 4,
+                backgroundColor: Colors.grey[300],
+                valueColor: const AlwaysStoppedAnimation<Color>(
+                  Color(0xFFFF6B35),
+                ),
+              ),
+            ),
             Expanded(
               child: PageView(
                 controller: controller.pageController,
@@ -62,9 +74,11 @@ class AdditionalInformationScreen extends StatelessWidget {
                   child: Obx(() {
                     final isNext = controller.currentPage.value < 5;
                     return ElevatedButton(
-                      onPressed: isNext ? controller.nextPage : controller.saveProfile,
+                      onPressed: isNext
+                          ? controller.nextPage
+                          : controller.saveProfile,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF7CB342),
+                        backgroundColor: const Color(0xFFFF6B35),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                       child: Text(
@@ -92,7 +106,7 @@ class AdditionalInformationScreen extends StatelessWidget {
                     },
                     child: Text(
                       controller.currentPage.value < 5 ? 'Skip' : 'Close',
-                      style: const TextStyle(color: Color(0xFF7CB342)),
+                      style: const TextStyle(color: Color(0xFFFF6B35)),
                     ),
                   ),
                 ),

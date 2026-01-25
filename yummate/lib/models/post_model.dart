@@ -45,6 +45,16 @@ class PostModel {
   }
 
   factory PostModel.fromJson(Map<String, dynamic> json) {
+    // Handle likedBy which might be a Map or List
+    List<String> parseLikedBy() {
+      final likedByData = json['likedBy'];
+      if (likedByData == null) return [];
+      if (likedByData is List) return List<String>.from(likedByData);
+      if (likedByData is Map)
+        return likedByData.keys.map((e) => e.toString()).toList();
+      return [];
+    }
+
     return PostModel(
       id: json['id'] ?? '',
       userId: json['userId'] ?? '',
@@ -52,11 +62,17 @@ class PostModel {
       userPhotoUrl: json['userPhotoUrl'],
       caption: json['caption'] ?? '',
       imageUrl: json['imageUrl'],
-      createdAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
-      likedBy: List<String>.from(json['likedBy'] ?? []),
+      createdAt: DateTime.parse(
+        json['createdAt'] ?? DateTime.now().toIso8601String(),
+      ),
+      likedBy: parseLikedBy(),
       likeCount: json['likeCount'] ?? 0,
       unlikeCount: json['unlikeCount'] ?? 0,
-      comments: (json['comments'] as List?)?.map((c) => CommentModel.fromJson(c)).toList() ?? [],
+      comments:
+          (json['comments'] as List?)
+              ?.map((c) => CommentModel.fromJson(c))
+              .toList() ??
+          [],
       averageRating: (json['averageRating'] ?? 0).toDouble(),
     );
   }
@@ -101,7 +117,9 @@ class CommentModel {
       userPhotoUrl: json['userPhotoUrl'],
       text: json['text'] ?? '',
       rating: (json['rating'] ?? 0).toDouble(),
-      createdAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
+      createdAt: DateTime.parse(
+        json['createdAt'] ?? DateTime.now().toIso8601String(),
+      ),
     );
   }
 }

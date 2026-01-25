@@ -27,37 +27,43 @@ class _SavedPostsScreenState extends State<SavedPostsScreen> {
     final user = _auth.currentUser;
     if (user != null) {
       setState(() => _userId = user.uid);
-      
+
       _savedPostsStream = _db
           .child('users')
           .child(user.uid)
           .child('savedPosts')
           .onValue
           .asyncMap((event) async {
-        if (event.snapshot.exists) {
-          final savedPostIds =
-              List<String>.from((event.snapshot.value as Map).keys);
-          final posts = <PostModel>[];
+            if (event.snapshot.exists) {
+              final savedPostIds = List<String>.from(
+                (event.snapshot.value as Map).keys,
+              );
+              final posts = <PostModel>[];
 
-          for (final postId in savedPostIds) {
-            try {
-              final postSnapshot = await _db.child('posts').child(postId).get();
-              if (postSnapshot.exists) {
-                final post = PostModel.fromJson(
-                    Map<String, dynamic>.from(postSnapshot.value as Map));
-                posts.add(post);
+              for (final postId in savedPostIds) {
+                try {
+                  final postSnapshot = await _db
+                      .child('posts')
+                      .child(postId)
+                      .get();
+                  if (postSnapshot.exists) {
+                    final post = PostModel.fromJson(
+                      Map<String, dynamic>.from(postSnapshot.value as Map),
+                    );
+                    posts.add(post);
+                  }
+                } catch (e) {
+                  debugPrint('Error fetching post $postId: $e');
+                }
               }
-            } catch (e) {
-              print('Error fetching post $postId: $e');
-            }
-          }
 
-          // Sort by date (newest first)
-          posts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-          return posts;
-        }
-        return <PostModel>[];
-      }).asBroadcastStream();
+              // Sort by date (newest first)
+              posts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+              return posts;
+            }
+            return <PostModel>[];
+          })
+          .asBroadcastStream();
     }
   }
 
@@ -126,10 +132,7 @@ class _SavedPostsScreenState extends State<SavedPostsScreen> {
                   const SizedBox(height: 8),
                   Text(
                     'Save posts to view them here',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade500,
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
                   ),
                 ],
               ),

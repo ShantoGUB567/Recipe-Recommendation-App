@@ -37,22 +37,49 @@ class AdditionalInfoController extends GetxController {
     'Sedentary',
     'Lightly Active',
     'Moderately Active',
-    'Very Active'
+    'Very Active',
   ];
   final List<String> primaryGoals = [
     'Weight Loss',
     'Muscle Gain',
-    'Maintenance'
+    'Maintenance',
   ];
   final List<String> dietaryOptions = ['Vegan', 'Keto', 'Paleo', 'Standard'];
   final List<String> commonCuisines = [
-    'Bangladeshi', 'Indian', 'Chinese', 'Italian', 'Thai', 'Mexican', 'American', 'Japanese', 'Korean', 'Mediterranean'
+    'Bangladeshi',
+    'Indian',
+    'Chinese',
+    'Italian',
+    'Thai',
+    'Mexican',
+    'American',
+    'Japanese',
+    'Korean',
+    'Mediterranean',
   ];
   final List<String> commonAllergies = [
-    'Peanuts','Tree Nuts','Milk','Eggs','Fish','Shellfish','Soy','Wheat','Sesame','Mustard'
+    'Peanuts',
+    'Tree Nuts',
+    'Milk',
+    'Eggs',
+    'Fish',
+    'Shellfish',
+    'Soy',
+    'Wheat',
+    'Sesame',
+    'Mustard',
   ];
   final List<String> commonMedicalConditions = [
-    'Diabetes','Hypertension','Asthma','Heart Disease','Thyroid','Arthritis','Celiac Disease','IBS','GERD','High Cholesterol'
+    'Diabetes',
+    'Hypertension',
+    'Asthma',
+    'Heart Disease',
+    'Thyroid',
+    'Arthritis',
+    'Celiac Disease',
+    'IBS',
+    'GERD',
+    'High Cholesterol',
   ];
 
   @override
@@ -75,7 +102,19 @@ class AdditionalInfoController extends GetxController {
 
   void nextPage() {
     if (currentPage.value < 5) {
-      pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+      pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  void previousPage() {
+    if (currentPage.value > 0) {
+      pageController.previousPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     }
   }
 
@@ -84,7 +123,6 @@ class AdditionalInfoController extends GetxController {
   }
 
   Future<void> saveProfile() async {
-
     isLoading.value = true;
     EasyLoading.show(status: 'Saving your profile...');
 
@@ -97,20 +135,29 @@ class AdditionalInfoController extends GetxController {
         return;
       }
 
-      final userAllergies = [
+      final userAllergies = <String>{
         ...selectedAllergies,
-        ...allergiesController.text.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty)
-      ].toSet().toList();
+        ...allergiesController.text
+            .split(',')
+            .map((e) => e.trim())
+            .where((e) => e.isNotEmpty),
+      }.toList();
 
-      final userMedicalConditions = [
+      final userMedicalConditions = <String>{
         ...selectedMedicalConditions,
-        ...medicalController.text.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty)
-      ].toSet().toList();
+        ...medicalController.text
+            .split(',')
+            .map((e) => e.trim())
+            .where((e) => e.isNotEmpty),
+      }.toList();
 
-      final userCuisines = [
+      final userCuisines = <String>{
         ...selectedCuisines,
-        ...cuisinesController.text.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty)
-      ].toSet().toList();
+        ...cuisinesController.text
+            .split(',')
+            .map((e) => e.trim())
+            .where((e) => e.isNotEmpty),
+      }.toList();
 
       final updatedProfile = UserProfile(
         uid: user.uid,
@@ -132,15 +179,19 @@ class AdditionalInfoController extends GetxController {
       final Map<String, dynamic> firebaseData = {
         'uid': user.uid,
         'age': ageController.text.isEmpty ? null : ageController.text,
-        'gender': selectedGender.value == null ? null : selectedGender.value,
+        'gender': selectedGender.value,
         'height': heightController.text.isEmpty ? null : heightController.text,
         'weight': weightController.text.isEmpty ? null : weightController.text,
-        'activityLevel': selectedActivityLevel.value == null ? null : selectedActivityLevel.value,
-        'primaryGoal': selectedPrimaryGoal.value == null ? null : selectedPrimaryGoal.value,
-        'dietaryPreferences': selectedDietaryPreferences.isEmpty ? null : selectedDietaryPreferences,
+        'activityLevel': selectedActivityLevel.value,
+        'primaryGoal': selectedPrimaryGoal.value,
+        'dietaryPreferences': selectedDietaryPreferences.isEmpty
+            ? null
+            : selectedDietaryPreferences,
         'favorite_cuisines': userCuisines.isEmpty ? null : userCuisines,
         'allergies': userAllergies.isEmpty ? null : userAllergies,
-        'medicalConditions': userMedicalConditions.isEmpty ? null : userMedicalConditions,
+        'medicalConditions': userMedicalConditions.isEmpty
+            ? null
+            : userMedicalConditions,
         'calorieGoal': spicyLevel.value,
       };
 

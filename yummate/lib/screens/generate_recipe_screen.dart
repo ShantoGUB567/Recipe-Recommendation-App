@@ -46,7 +46,7 @@ class _GenerateRecipeScreenState extends State<GenerateRecipeScreen> {
           recipes: widget.recipes,
         );
       } catch (e) {
-        print('Error saving history to Firebase: $e');
+        debugPrint('Error saving history to Firebase: $e');
       }
     }
 

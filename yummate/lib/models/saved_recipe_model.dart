@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'recipe_model.dart';
 
 class SavedRecipeModel {
@@ -23,11 +24,28 @@ class SavedRecipeModel {
   }
 
   factory SavedRecipeModel.fromJson(Map<String, dynamic> json) {
-    return SavedRecipeModel(
-      id: json['id'] ?? '',
-      userId: json['userId'] ?? '',
-      recipe: RecipeModel.fromJson(json['recipe'] ?? {}),
-      savedAt: DateTime.parse(json['savedAt'] ?? DateTime.now().toIso8601String()),
-    );
+    try {
+      return SavedRecipeModel(
+        id: json['id'] ?? '',
+        userId: json['userId'] ?? '',
+        recipe: json['recipe'] != null
+            ? RecipeModel.fromJson(Map<String, dynamic>.from(json['recipe']))
+            : RecipeModel(
+                name: 'Unknown Recipe',
+                preparationTime: '0 min',
+                calories: '0',
+                description: '',
+                ingredients: [],
+                instructions: [],
+              ),
+        savedAt: json['savedAt'] != null
+            ? DateTime.parse(json['savedAt'])
+            : DateTime.now(),
+      );
+    } catch (e) {
+      debugPrint('Error parsing SavedRecipeModel: $e');
+      debugPrint('JSON data: $json');
+      rethrow;
+    }
   }
 }
