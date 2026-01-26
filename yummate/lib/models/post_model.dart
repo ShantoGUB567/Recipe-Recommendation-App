@@ -50,8 +50,9 @@ class PostModel {
       final likedByData = json['likedBy'];
       if (likedByData == null) return [];
       if (likedByData is List) return List<String>.from(likedByData);
-      if (likedByData is Map)
+      if (likedByData is Map) {
         return likedByData.keys.map((e) => e.toString()).toList();
+      }
       return [];
     }
 

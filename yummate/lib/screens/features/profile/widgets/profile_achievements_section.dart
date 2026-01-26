@@ -6,11 +6,11 @@ class ProfileAchievementsSection extends StatelessWidget {
   final DateTime? memberSince;
 
   const ProfileAchievementsSection({
-    Key? key,
+    super.key,
     required this.postsCount,
     required this.savedRecipesCount,
     this.memberSince,
-  }) : super(key: key);
+  });
 
   List<Map<String, dynamic>> _getAchievements() {
     List<Map<String, dynamic>> achievements = [];

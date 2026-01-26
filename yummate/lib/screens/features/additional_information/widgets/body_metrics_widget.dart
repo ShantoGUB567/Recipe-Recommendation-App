@@ -102,7 +102,7 @@ class BodyMetricsWidget extends StatelessWidget {
               hint: 'Select your gender',
               child: Obx(
                 () => DropdownButtonFormField<String>(
-                  value: controller.selectedGender.value,
+                  initialValue: controller.selectedGender.value,
                   items: controller.genderOptions
                       .map(
                         (gender) => DropdownMenuItem(

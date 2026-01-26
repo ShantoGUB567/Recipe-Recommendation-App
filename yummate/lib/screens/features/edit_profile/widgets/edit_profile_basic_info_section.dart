@@ -122,7 +122,7 @@ class _EditProfileBasicInfoSectionState
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: widget.cookingLevel,
+          initialValue: widget.cookingLevel,
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             prefixIcon: const Icon(Icons.local_dining_outlined),
