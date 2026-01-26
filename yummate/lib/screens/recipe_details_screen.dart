@@ -208,10 +208,8 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                 children: [
                   _buildCircularButton(
                     icon: isSaved ? Icons.bookmark : Icons.bookmark_border,
-                    label: 'Save\nRecipe',
-                    color: isSaved
-                        ? const Color(0xFFFF6B35)
-                        : const Color(0xFFFF6B35),
+                    label: isSaved ? 'Saved' : 'Save\nRecipe',
+                    color: const Color(0xFFFF6B35),
                     onTap: _toggleSaveRecipe,
                     isFilled: isSaved,
                   ),
@@ -438,8 +436,9 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: color,
+              color: isFilled ? color : Colors.white,
               shape: BoxShape.circle,
+              border: isFilled ? null : Border.all(color: color, width: 2),
               boxShadow: [
                 BoxShadow(
                   color: color.withValues(alpha: 0.3),
@@ -448,7 +447,11 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                 ),
               ],
             ),
-            child: Icon(icon, color: Colors.white, size: 26),
+            child: Icon(
+              icon,
+              color: isFilled ? Colors.white : color,
+              size: 26,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -457,7 +460,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w500,
-              color: Colors.grey.shade700,
+              color: isFilled ? color : Colors.grey.shade700,
               height: 1.2,
             ),
           ),
