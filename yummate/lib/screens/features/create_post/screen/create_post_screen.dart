@@ -6,6 +6,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'dart:io';
 import 'package:yummate/models/post_model.dart';
+import '../widgets/create_post_user_header.dart';
+import '../widgets/caption_input.dart';
+import '../widgets/image_preview.dart';
+import '../widgets/add_media_section.dart';
 
 class CreatePostScreen extends StatefulWidget {
   const CreatePostScreen({super.key});
@@ -210,214 +214,30 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // User info section
-                  Container(
-                    color: Colors.white,
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        // User Avatar with gradient
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Center(
-                            child: Text(
-                              (_userName?.isNotEmpty ?? false)
-                                  ? _userName![0].toUpperCase()
-                                  : 'U',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                fontSize: 20,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                _userName ?? 'Loading...',
-                                style: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.public,
-                                    size: 12,
-                                    color: Colors.grey.shade600,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    'Public',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey.shade600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                  CreatePostUserHeader(
+                    userName: _userName,
+                    userPhotoUrl: _userPhotoUrl,
                   ),
 
-                  // Caption input - Facebook style
-                  Container(
-                    color: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    child: TextField(
-                      controller: _captionController,
-                      maxLines: null,
-                      minLines: 5,
-                      maxLength: 5000,
-                      autofocus: true,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.black87,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: "What's cooking today?",
-                        hintStyle: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey.shade500,
-                        ),
-                        border: InputBorder.none,
-                        counterStyle: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                  ),
+                  // Caption input
+                  CaptionInput(controller: _captionController),
 
                   const SizedBox(height: 8),
 
                   // Image preview section
-                  if (_selectedImage != null)
-                    Container(
-                      color: Colors.white,
-                      padding: const EdgeInsets.all(12),
-                      child: Stack(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.file(
-                              _selectedImage!,
-                              width: double.infinity,
-                              height: 350,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          Positioned(
-                            top: 8,
-                            right: 8,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 8,
-                                    spreadRadius: 2,
-                                  ),
-                                ],
-                              ),
-                              child: IconButton(
-                                onPressed: () {
-                                  setState(() => _selectedImage = null);
-                                },
-                                icon: const Icon(
-                                  Icons.close,
-                                  color: Colors.black87,
-                                  size: 20,
-                                ),
-                                padding: const EdgeInsets.all(8),
-                                constraints: const BoxConstraints(),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  ImagePreview(
+                    selectedImage: _selectedImage,
+                    onRemove: () {
+                      setState(() => _selectedImage = null);
+                    },
+                  ),
 
                   const SizedBox(height: 8),
 
                   // Add to post section
-                  Container(
-                    color: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    child: Row(
-                      children: [
-                        const Text(
-                          'Add to your post',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        const Spacer(),
-                        // Photo/Video button
-                        InkWell(
-                          onTap: _pickImage,
-                          borderRadius: BorderRadius.circular(8),
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: _selectedImage == null
-                                  ? const Color(0xFFFF6B35).withOpacity(0.1)
-                                  : Colors.grey.shade100,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.image,
-                                  color: _selectedImage == null
-                                      ? const Color(0xFFFF6B35)
-                                      : Colors.grey.shade600,
-                                  size: 24,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  'Photo',
-                                  style: TextStyle(
-                                    color: _selectedImage == null
-                                        ? const Color(0xFFFF6B35)
-                                        : Colors.grey.shade600,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                  AddMediaSection(
+                    onPhotoTapped: _pickImage,
+                    hasImage: _selectedImage != null,
                   ),
                 ],
               ),

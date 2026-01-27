@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:yummate/services/recipe_service.dart';
-import 'package:yummate/screens/recipe_details_screen.dart';
+import 'package:yummate/screens/features/recipe_details/screen/recipe_details_screen.dart';
 import 'package:yummate/models/saved_recipe_model.dart';
 
 class SavedRecipesScreen extends StatefulWidget {

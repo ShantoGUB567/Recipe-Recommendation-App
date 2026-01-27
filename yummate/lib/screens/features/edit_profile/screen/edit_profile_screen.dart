@@ -7,6 +7,16 @@ import 'dart:convert';
 import 'package:yummate/screens/features/edit_profile/widgets/edit_profile_image_picker.dart';
 import 'package:yummate/screens/features/edit_profile/widgets/edit_profile_basic_info_section.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import '../widgets_new/health_metrics_section.dart';
+import '../widgets_new/gender_section.dart';
+import '../widgets_new/activity_level_section.dart';
+import '../widgets_new/primary_goal_section.dart';
+import '../widgets_new/dietary_preferences_section.dart';
+import '../widgets_new/spicy_level_section.dart';
+import '../widgets_new/cuisines_section.dart';
+import '../widgets_new/allergies_section.dart';
+import '../widgets_new/medical_conditions_section.dart';
+import '../widgets_new/save_profile_button.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final Map<String, dynamic>? userData;
@@ -328,7 +338,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             // Profile Image Picker
             EditProfileImagePicker(
               onImagePicked: (image) => setState(() => profileImage = image),
@@ -354,842 +364,119 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             const SizedBox(height: 32),
 
-            // Health & Preferences Section
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: const Color(
-                              0xFFFF6B35,
-                            ).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.health_and_safety_outlined,
-                            color: Color(0xFFFF6B35),
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        const Text(
-                          'Age, Height & Weight',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: ageController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Age',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: heightController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Height (cm)',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: weightController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Weight (kg)',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            // Health Metrics Section
+            HealthMetricsSection(
+              ageController: ageController,
+              heightController: heightController,
+              weightController: weightController,
             ),
             const SizedBox(height: 16),
 
-            // Gender
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: const Color(
-                              0xFF4CAF50,
-                            ).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.person_outline,
-                            color: Color(0xFF4CAF50),
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        const Text(
-                          'Gender',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    DropdownButtonFormField<String>(
-                      initialValue: selectedGender,
-                      items: genderOptions
-                          .map(
-                            (gender) => DropdownMenuItem(
-                              value: gender,
-                              child: Text(gender),
-                            ),
-                          )
-                          .toList(),
-                      onChanged: (value) =>
-                          setState(() => selectedGender = value),
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            // Gender Section
+            GenderSection(
+              selectedGender: selectedGender,
+              genderOptions: genderOptions,
+              onChanged: (value) => setState(() => selectedGender = value),
             ),
             const SizedBox(height: 16),
 
-            // Activity Level
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: const Color(
-                              0xFF2196F3,
-                            ).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.directions_run,
-                            color: Color(0xFF2196F3),
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        const Text(
-                          'Activity Level',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Wrap(
-                      spacing: 8,
-                      children: activityLevels.map((level) {
-                        final isSelected = selectedActivityLevel == level;
-                        return FilterChip(
-                          label: Text(level),
-                          selected: isSelected,
-                          onSelected: (selected) {
-                            setState(
-                              () => selectedActivityLevel = selected
-                                  ? level
-                                  : null,
-                            );
-                          },
-                          selectedColor: const Color(
-                            0xFF7CB342,
-                          ).withValues(alpha: 0.2),
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
-              ),
+            // Activity Level Section
+            ActivityLevelSection(
+              selectedActivityLevel: selectedActivityLevel,
+              activityLevels: activityLevels,
+              onChanged: (value) =>
+                  setState(() => selectedActivityLevel = value),
             ),
             const SizedBox(height: 16),
 
-            // Primary Goal
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: const Color(
-                              0xFFFFA726,
-                            ).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.flag_outlined,
-                            color: Color(0xFFFFA726),
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        const Text(
-                          'Primary Goal',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Wrap(
-                      spacing: 8,
-                      children: primaryGoals.map((goal) {
-                        final isSelected = selectedPrimaryGoal == goal;
-                        return FilterChip(
-                          label: Text(goal),
-                          selected: isSelected,
-                          onSelected: (selected) {
-                            setState(
-                              () =>
-                                  selectedPrimaryGoal = selected ? goal : null,
-                            );
-                          },
-                          selectedColor: const Color(
-                            0xFF7CB342,
-                          ).withValues(alpha: 0.2),
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
-              ),
+            // Primary Goal Section
+            PrimaryGoalSection(
+              selectedPrimaryGoal: selectedPrimaryGoal,
+              primaryGoals: primaryGoals,
+              onChanged: (value) =>
+                  setState(() => selectedPrimaryGoal = value),
             ),
             const SizedBox(height: 16),
 
-            // Dietary Preferences
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: const Color(
-                              0xFF7CB342,
-                            ).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.restaurant,
-                            color: Color(0xFF7CB342),
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        const Text(
-                          'Dietary Preferences',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Wrap(
-                      spacing: 8,
-                      children: dietaryOptions.map((diet) {
-                        final isSelected = selectedDietaryPreferences.contains(
-                          diet,
-                        );
-                        return FilterChip(
-                          label: Text(diet),
-                          selected: isSelected,
-                          onSelected: (selected) {
-                            setState(() {
-                              if (selected) {
-                                selectedDietaryPreferences.add(diet);
-                              } else {
-                                selectedDietaryPreferences.remove(diet);
-                              }
-                            });
-                          },
-                          selectedColor: const Color(
-                            0xFF7CB342,
-                          ).withValues(alpha: 0.2),
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
-              ),
+            // Dietary Preferences Section
+            DietaryPreferencesSection(
+              selectedDietaryPreferences: selectedDietaryPreferences,
+              dietaryOptions: dietaryOptions,
+              onChanged: (value) =>
+                  setState(() => selectedDietaryPreferences = value),
             ),
             const SizedBox(height: 16),
 
-            // Spicy Level
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.red.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.whatshot,
-                            color: Colors.red,
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        const Text(
-                          'Spicy Level',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('🌶️ Mild'),
-                        Text(
-                          '$spicyLevel',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const Text('🌶️🌶️🌶️ Very Hot'),
-                      ],
-                    ),
-                    Slider(
-                      value: spicyLevel.toDouble(),
-                      min: 1,
-                      max: 5,
-                      divisions: 4,
-                      onChanged: (value) =>
-                          setState(() => spicyLevel = value.toInt()),
-                    ),
-                  ],
-                ),
-              ),
+            // Spicy Level Section
+            SpicyLevelSection(
+              spicyLevel: spicyLevel,
+              onChanged: (value) => setState(() => spicyLevel = value),
             ),
             const SizedBox(height: 16),
 
-            // Favorite Cuisines
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: const Color(
-                              0xFFFF6B35,
-                            ).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.public,
-                            color: Color(0xFFFF6B35),
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        const Text(
-                          'Favorite Cuisines',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Wrap(
-                      spacing: 6,
-                      children: commonCuisines.map((cuisine) {
-                        final isSelected = selectedCuisines.contains(cuisine);
-                        return FilterChip(
-                          label: Text(cuisine),
-                          selected: isSelected,
-                          onSelected: (selected) {
-                            setState(() {
-                              if (selected) {
-                                selectedCuisines.add(cuisine);
-                              } else {
-                                selectedCuisines.remove(cuisine);
-                              }
-                            });
-                          },
-                          backgroundColor: Colors.transparent,
-                          selectedColor: const Color(
-                            0xFF7CB342,
-                          ).withValues(alpha: 0.2),
-                          side: BorderSide(
-                            color: isSelected
-                                ? const Color(0xFF7CB342)
-                                : Colors.grey[400]!,
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: cuisinesController,
-                            decoration: InputDecoration(
-                              hintText: 'Add custom cuisine',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          height: 48,
-                          width: 48,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF7CB342),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                if (cuisinesController.text.isNotEmpty) {
-                                  setState(() {
-                                    selectedCuisines.add(
-                                      cuisinesController.text,
-                                    );
-                                  });
-                                  cuisinesController.clear();
-                                }
-                              },
-                              borderRadius: BorderRadius.circular(8),
-                              child: const Icon(Icons.add, color: Colors.white),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (selectedCuisines.isNotEmpty)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 12),
-                          Wrap(
-                            spacing: 8,
-                            children: selectedCuisines.map((cuisine) {
-                              return Chip(
-                                label: Text(cuisine),
-                                onDeleted: () {
-                                  setState(
-                                    () => selectedCuisines.remove(cuisine),
-                                  );
-                                },
-                                backgroundColor: const Color(
-                                  0xFF7CB342,
-                                ).withValues(alpha: 0.2),
-                              );
-                            }).toList(),
-                          ),
-                        ],
-                      ),
-                  ],
-                ),
-              ),
+            // Cuisines Section
+            CuisinesSection(
+              selectedCuisines: selectedCuisines,
+              commonCuisines: commonCuisines,
+              cuisinesController: cuisinesController,
+              onAddCuisine: () {
+                if (cuisinesController.text.isNotEmpty) {
+                  setState(() {
+                    selectedCuisines.add(cuisinesController.text);
+                  });
+                  cuisinesController.clear();
+                }
+              },
+              onChanged: (value) =>
+                  setState(() => selectedCuisines = value),
             ),
             const SizedBox(height: 16),
 
-            // Allergies
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.red.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.warning_amber_rounded,
-                            color: Colors.red,
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        const Text(
-                          'Allergies',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Wrap(
-                      spacing: 6,
-                      children: commonAllergies.map((allergy) {
-                        final isSelected = selectedAllergies.contains(allergy);
-                        return FilterChip(
-                          label: Text(allergy),
-                          selected: isSelected,
-                          onSelected: (selected) {
-                            setState(() {
-                              if (selected) {
-                                selectedAllergies.add(allergy);
-                              } else {
-                                selectedAllergies.remove(allergy);
-                              }
-                            });
-                          },
-                          backgroundColor: Colors.transparent,
-                          selectedColor: Colors.red.shade100,
-                          side: BorderSide(
-                            color: isSelected
-                                ? Colors.red.shade300
-                                : Colors.grey[400]!,
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: allergiesController,
-                            decoration: InputDecoration(
-                              hintText: 'Add custom allergy',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          height: 48,
-                          width: 48,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF7CB342),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                if (allergiesController.text.isNotEmpty) {
-                                  setState(() {
-                                    selectedAllergies.add(
-                                      allergiesController.text,
-                                    );
-                                  });
-                                  allergiesController.clear();
-                                }
-                              },
-                              borderRadius: BorderRadius.circular(8),
-                              child: const Icon(Icons.add, color: Colors.white),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (selectedAllergies.isNotEmpty)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 12),
-                          Wrap(
-                            spacing: 8,
-                            children: selectedAllergies.map((allergy) {
-                              return Chip(
-                                label: Text(allergy),
-                                onDeleted: () {
-                                  setState(
-                                    () => selectedAllergies.remove(allergy),
-                                  );
-                                },
-                                backgroundColor: Colors.red.shade100,
-                              );
-                            }).toList(),
-                          ),
-                        ],
-                      ),
-                  ],
-                ),
-              ),
+            // Allergies Section
+            AllergiesSection(
+              selectedAllergies: selectedAllergies,
+              commonAllergies: commonAllergies,
+              allergiesController: allergiesController,
+              onAddAllergy: () {
+                if (allergiesController.text.isNotEmpty) {
+                  setState(() {
+                    selectedAllergies.add(allergiesController.text);
+                  });
+                  allergiesController.clear();
+                }
+              },
+              onChanged: (value) =>
+                  setState(() => selectedAllergies = value),
             ),
             const SizedBox(height: 16),
 
-            // Medical Conditions
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Medical Conditions',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Wrap(
-                      spacing: 6,
-                      children: commonMedicalConditions.map((condition) {
-                        final isSelected = selectedMedicalConditions.contains(
-                          condition,
-                        );
-                        return FilterChip(
-                          label: Text(condition),
-                          selected: isSelected,
-                          onSelected: (selected) {
-                            setState(() {
-                              if (selected) {
-                                selectedMedicalConditions.add(condition);
-                              } else {
-                                selectedMedicalConditions.remove(condition);
-                              }
-                            });
-                          },
-                          backgroundColor: Colors.transparent,
-                          selectedColor: Colors.amber.shade100,
-                          side: BorderSide(
-                            color: isSelected
-                                ? Colors.amber.shade400
-                                : Colors.grey[400]!,
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: medicalController,
-                            decoration: InputDecoration(
-                              hintText: 'Add custom condition',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          height: 48,
-                          width: 48,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF7CB342),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                if (medicalController.text.isNotEmpty) {
-                                  setState(() {
-                                    selectedMedicalConditions.add(
-                                      medicalController.text,
-                                    );
-                                  });
-                                  medicalController.clear();
-                                }
-                              },
-                              borderRadius: BorderRadius.circular(8),
-                              child: const Icon(Icons.add, color: Colors.white),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (selectedMedicalConditions.isNotEmpty)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 12),
-                          Wrap(
-                            spacing: 8,
-                            children: selectedMedicalConditions.map((
-                              condition,
-                            ) {
-                              return Chip(
-                                label: Text(condition),
-                                onDeleted: () {
-                                  setState(
-                                    () => selectedMedicalConditions.remove(
-                                      condition,
-                                    ),
-                                  );
-                                },
-                                backgroundColor: Colors.amber.shade100,
-                              );
-                            }).toList(),
-                          ),
-                        ],
-                      ),
-                  ],
-                ),
-              ),
+            // Medical Conditions Section
+            MedicalConditionsSection(
+              selectedMedicalConditions: selectedMedicalConditions,
+              commonMedicalConditions: commonMedicalConditions,
+              medicalController: medicalController,
+              onAddCondition: () {
+                if (medicalController.text.isNotEmpty) {
+                  setState(() {
+                    selectedMedicalConditions.add(medicalController.text);
+                  });
+                  medicalController.clear();
+                }
+              },
+              onChanged: (value) =>
+                  setState(() => selectedMedicalConditions = value),
             ),
             const SizedBox(height: 32),
 
             // Save Button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: saveProfile,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFF6B35),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 2,
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.check_circle_outline, size: 22),
-                    SizedBox(width: 8),
-                    Text(
-                      'Save Changes',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            SaveProfileButton(
+              onPressed: saveProfile,
+              isLoading: false,
             ),
             const SizedBox(height: 24),
           ],
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    nameController.dispose();
-    emailController.dispose();
-    phoneController.dispose();
-    usernameController.dispose();
-    ageController.dispose();
-    heightController.dispose();
-    weightController.dispose();
-    allergiesController.dispose();
-    medicalController.dispose();
-    cuisinesController.dispose();
-    super.dispose();
   }
 }

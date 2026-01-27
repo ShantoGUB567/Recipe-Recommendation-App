@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:yummate/services/recipe_service.dart';
 import 'package:yummate/models/recipe_history_model.dart';
-import 'package:yummate/screens/generate_recipe_screen.dart';
+import 'package:yummate/screens/features/generate_recipe/screen/generate_recipe_screen.dart';
 import 'package:intl/intl.dart';
 
 class SavedRecipeSessionsScreen extends StatefulWidget {

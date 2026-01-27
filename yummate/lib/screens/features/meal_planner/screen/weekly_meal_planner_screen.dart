@@ -8,7 +8,11 @@ import 'package:yummate/models/recipe_model.dart';
 import 'package:yummate/core/widgets/bottom_nav_bar.dart';
 import 'package:yummate/services/meal_planner_service.dart';
 import 'package:yummate/services/gemini_service.dart';
-import 'package:yummate/screens/recipe_details_screen.dart';
+import 'package:yummate/screens/features/recipe_details/screen/recipe_details_screen.dart';
+import '../widgets/day_selector.dart';
+import '../widgets/ai_generation_banner.dart';
+import '../widgets/meal_section.dart';
+import '../widgets/daily_calorie_summary.dart';
 
 class WeeklyMealPlannerScreen extends StatefulWidget {
   const WeeklyMealPlannerScreen({super.key});
@@ -527,318 +531,52 @@ class _WeeklyMealPlannerScreenState extends State<WeeklyMealPlannerScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // AI Generation offer banner (only show if not generating)
-            if (!_isGenerating)
-              Container(
-                margin: const EdgeInsets.only(bottom: 20),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFFF6B35).withValues(alpha: 0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(
-                        Icons.auto_awesome,
-                        color: Colors.white,
-                        size: 28,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Want a Personalized Plan?',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            'Generate with AI based on your profile',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    ElevatedButton(
-                      onPressed: _generateAIMealPlan,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: const Color(0xFFFF6B35),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'Generate',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-            // Generating indicator banner
-            if (_isGenerating)
-              Container(
-                margin: const EdgeInsets.only(bottom: 16),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Text(
-                        'AI is generating your personalized meal plan...',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: const Text(
-                        'You can navigate away',
-                        style: TextStyle(color: Colors.white, fontSize: 11),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            // Week selector header
-            const Row(
-              children: [
-                Icon(Icons.calendar_today, color: Color(0xFFFF6B35), size: 20),
-                SizedBox(width: 8),
-                Text(
-                  'Select Day',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-              ],
+            // AI Generation offer banner
+            AIGenerationBanner(
+              onGeneratePressed: _generateAIMealPlan,
+              isGenerating: _isGenerating,
             ),
-            const SizedBox(height: 12),
 
             // Week selector
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-                    .map(
-                      (day) => GestureDetector(
-                        onTap: () {
-                          setState(() => selectedDay = day);
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.only(right: 10),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
-                          ),
-                          decoration: BoxDecoration(
-                            gradient: selectedDay == day
-                                ? const LinearGradient(
-                                    colors: [
-                                      Color(0xFFFF6B35),
-                                      Color(0xFFFF8C42),
-                                    ],
-                                  )
-                                : null,
-                            color: selectedDay == day ? null : Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: selectedDay == day
-                                  ? Colors.transparent
-                                  : Colors.grey.shade300,
-                              width: 1.5,
-                            ),
-                            boxShadow: selectedDay == day
-                                ? [
-                                    BoxShadow(
-                                      color: const Color(
-                                        0xFFFF6B35,
-                                      ).withValues(alpha: 0.3),
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ]
-                                : null,
-                          ),
-                          child: Text(
-                            day,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: selectedDay == day
-                                  ? Colors.white
-                                  : Colors.grey.shade700,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
+            DaySelector(
+              selectedDay: selectedDay,
+              onDaySelected: (day) => setState(() => selectedDay = day),
             ),
             const SizedBox(height: 24),
 
             // Breakfast section
-            _buildMealSection(
-              'BREAKFAST',
-              '🍳',
-              currentPlan.meals
+            MealSection(
+              title: 'BREAKFAST',
+              emoji: '🍳',
+              meals: currentPlan.meals
                   .where((m) => m.category == 'breakfast')
                   .toList(),
+              onMealTapped: _viewMealRecipe,
             ),
             const SizedBox(height: 16),
 
             // Lunch section
-            _buildMealSection(
-              'LUNCH',
-              '🍲',
-              currentPlan.meals.where((m) => m.category == 'lunch').toList(),
+            MealSection(
+              title: 'LUNCH',
+              emoji: '🍲',
+              meals:
+                  currentPlan.meals.where((m) => m.category == 'lunch').toList(),
+              onMealTapped: _viewMealRecipe,
             ),
             const SizedBox(height: 16),
 
             // Dinner section
-            _buildMealSection(
-              'DINNER',
-              '🍽️',
-              currentPlan.meals.where((m) => m.category == 'dinner').toList(),
+            MealSection(
+              title: 'DINNER',
+              emoji: '🍽️',
+              meals:
+                  currentPlan.meals.where((m) => m.category == 'dinner').toList(),
+              onMealTapped: _viewMealRecipe,
             ),
             const SizedBox(height: 24),
 
             // Daily total
-            Container(
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
-                ),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFFFF6B35).withValues(alpha: 0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(
-                      Icons.local_fire_department,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Total Calories',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.white70,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${currentPlan.totalCalories} kcal',
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Text(
-                      'On Track',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            DailyCalorieSummary(currentPlan: currentPlan),
           ],
         ),
       ),
@@ -846,170 +584,5 @@ class _WeeklyMealPlannerScreenState extends State<WeeklyMealPlannerScreen> {
     );
   }
 
-  Widget _buildMealSection(String title, String emoji, List<MealModel> meals) {
-    if (meals.isEmpty) {
-      return const SizedBox.shrink();
-    }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(emoji, style: const TextStyle(fontSize: 20)),
-            const SizedBox(width: 8),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-                letterSpacing: 0.5,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Container(
-                height: 2,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.grey.shade300, Colors.transparent],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        ...meals.map((meal) => _buildMealCard(meal)),
-      ],
-    );
-  }
-
-  Widget _buildMealCard(MealModel meal) {
-    Color categoryColor;
-    IconData categoryIcon;
-
-    switch (meal.category) {
-      case 'breakfast':
-        categoryColor = const Color(0xFFFFA726);
-        categoryIcon = Icons.breakfast_dining;
-        break;
-      case 'lunch':
-        categoryColor = const Color(0xFF66BB6A);
-        categoryIcon = Icons.lunch_dining;
-        break;
-      case 'dinner':
-        categoryColor = const Color(0xFF42A5F5);
-        categoryIcon = Icons.dinner_dining;
-        break;
-      default:
-        categoryColor = const Color(0xFF7CB342);
-        categoryIcon = Icons.restaurant;
-    }
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: categoryColor.withValues(alpha: 0.15),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () => _viewMealRecipe(meal),
-          child: Padding(
-            padding: const EdgeInsets.all(14),
-            child: Row(
-              children: [
-                // Meal icon
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        categoryColor,
-                        categoryColor.withValues(alpha: 0.7),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(categoryIcon, color: Colors.white, size: 28),
-                ),
-                const SizedBox(width: 14),
-
-                // Meal info
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        meal.name,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.local_fire_department,
-                            size: 14,
-                            color: Colors.grey.shade600,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${meal.calories} kcal',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade600,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: categoryColor.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          meal.benefits,
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: categoryColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }

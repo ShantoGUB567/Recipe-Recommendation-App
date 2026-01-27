@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
-import 'package:yummate/screens/generate_recipe_screen.dart';
+import 'package:yummate/screens/features/generate_recipe/screen/generate_recipe_screen.dart';
 import 'package:yummate/services/gemini_service.dart';
 import 'package:yummate/models/recipe_model.dart';
 
