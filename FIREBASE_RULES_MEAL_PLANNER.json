@@ -1,0 +1,65 @@
+{
+  "rules": {
+    "weekly_meal_plans": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        "$planId": {
+          ".validate": "newData.hasChildren(['generatedDate', 'startDate', 'endDate', 'meals'])",
+          "generatedDate": {
+            ".validate": "newData.isString()"
+          },
+          "startDate": {
+            ".validate": "newData.isString()"
+          },
+          "endDate": {
+            ".validate": "newData.isString()"
+          },
+          "meals": {
+            "$index": {
+              ".validate": "newData.hasChildren(['day', 'meals'])",
+              "day": {
+                ".validate": "newData.isString()"
+              },
+              "meals": {
+                "$mealIndex": {
+                  ".validate": "newData.hasChildren(['id', 'name', 'calories', 'category'])",
+                  "id": {
+                    ".validate": "newData.isString()"
+                  },
+                  "name": {
+                    ".validate": "newData.isString()"
+                  },
+                  "calories": {
+                    ".validate": "newData.isNumber()"
+                  },
+                  "category": {
+                    ".validate": "newData.isString() && (newData.val() === 'breakfast' || newData.val() === 'lunch' || newData.val() === 'dinner')"
+                  },
+                  "benefits": {
+                    ".validate": "newData.isString()"
+                  },
+                  "description": {
+                    ".validate": "newData.isString()"
+                  },
+                  "preparationTime": {
+                    ".validate": "newData.isString()"
+                  },
+                  "servings": {
+                    ".validate": "newData.isString()"
+                  },
+                  "ingredients": {
+                    ".validate": "newData.isArray()"
+                  },
+                  "instructions": {
+                    ".validate": "newData.isArray()"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

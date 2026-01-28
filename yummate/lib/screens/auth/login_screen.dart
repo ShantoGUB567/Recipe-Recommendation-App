@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:yummate/services/theme_service.dart';
 import 'package:yummate/core/widgets/custom_text_field.dart';
 import 'package:yummate/core/widgets/primary_button.dart';
@@ -28,7 +29,7 @@ class LoginScreen extends StatelessWidget {
     debugPrint("🔑 Password length: ${password.length}");
 
     if (email.isEmpty || password.isEmpty) {
-      Get.snackbar("Error", "Email & password required");
+      EasyLoading.showError('Email & password required');
       debugPrint("❌ Empty email or password");
       return;
     }
@@ -74,10 +75,10 @@ class LoginScreen extends StatelessWidget {
       Get.offAll(() => HomeScreen(userName: userName));
       debugPrint("➡️ Navigated to HomeScreen");
 
-      Get.snackbar("Success", "Login successful!");
+      EasyLoading.showSuccess('Login successful!', duration: Duration(seconds: 1));
     } catch (e) {
       debugPrint("❌ Login Failed: $e");
-      Get.snackbar("Login Failed", e.toString());
+      EasyLoading.showError('Login failed: ${e.toString().substring(0, 50)}');
     }
   }
 

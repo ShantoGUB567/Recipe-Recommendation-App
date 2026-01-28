@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:yummate/models/post_model.dart';
 import 'package:intl/intl.dart';
 
@@ -30,9 +31,7 @@ class _PostDetailDialogState extends State<PostDetailDialog> {
   Future<void> _submitReview() async {
     final text = _commentController.text.trim();
     if (text.isEmpty && _rating == 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please add a comment or rating')),
-      );
+      EasyLoading.showError('Please add a comment or rating');
       return;
     }
 
@@ -41,9 +40,7 @@ class _PostDetailDialogState extends State<PostDetailDialog> {
     try {
       final user = _auth.currentUser;
       if (user == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please login to add review')),
-        );
+        EasyLoading.showError('Please login to add review');
         return;
       }
 
@@ -84,19 +81,13 @@ class _PostDetailDialogState extends State<PostDetailDialog> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Review added successfully')),
-        );
+        EasyLoading.showSuccess('Review added successfully');
       }
 
       _commentController.clear();
       setState(() => _rating = 0);
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
-      }
+      EasyLoading.showError('Error: ${e.toString().substring(0, 50)}');
     } finally {
       setState(() => _isSubmitting = false);
     }
