@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:yummate/models/post_model.dart';
 import 'package:yummate/core/widgets/post_detail_dialog.dart';
 import 'package:intl/intl.dart';
@@ -61,9 +62,7 @@ class _PostCardState extends State<PostCard> {
   Future<void> _toggleLike() async {
     final user = _auth.currentUser;
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please login to like posts')),
-      );
+      EasyLoading.showError('Please login to like posts');
       return;
     }
 
@@ -126,20 +125,14 @@ class _PostCardState extends State<PostCard> {
         });
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
-      }
+      EasyLoading.showError('Error: ${e.toString().substring(0, 50)}');
     }
   }
 
   Future<void> _toggleSave() async {
     final user = _auth.currentUser;
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please login to save posts')),
-      );
+      EasyLoading.showError('Please login to save posts');
       return;
     }
 
@@ -163,11 +156,7 @@ class _PostCardState extends State<PostCard> {
       }
       widget.onSaved();
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
-      }
+      EasyLoading.showError('Error: ${e.toString().substring(0, 50)}');
     }
   }
 
@@ -236,9 +225,7 @@ class _PostCardState extends State<PostCard> {
             onPressed: () async {
               final newCaption = captionController.text.trim();
               if (newCaption.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Caption cannot be empty')),
-                );
+                EasyLoading.showError('Caption cannot be empty');
                 return;
               }
 
@@ -268,16 +255,10 @@ class _PostCardState extends State<PostCard> {
 
                 if (mounted) {
                   Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Post updated successfully')),
-                  );
+                  EasyLoading.showSuccess('Post updated successfully');
                 }
               } catch (e) {
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Failed to update post: $e')),
-                  );
-                }
+                EasyLoading.showError('Failed to update post');
               }
             },
             child: const Text('Save'),
@@ -323,16 +304,10 @@ class _PostCardState extends State<PostCard> {
 
                 if (mounted) {
                   Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Post deleted successfully')),
-                  );
+                  EasyLoading.showSuccess('Post deleted successfully');
                 }
               } catch (e) {
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Failed to delete post: $e')),
-                  );
-                }
+                EasyLoading.showError('Failed to delete post');
               }
             },
             child: const Text('Delete'),

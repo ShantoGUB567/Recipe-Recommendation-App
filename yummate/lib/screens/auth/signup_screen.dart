@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -43,20 +44,12 @@ class SignupScreen extends StatelessWidget {
         phone.isEmpty ||
         password.isEmpty ||
         confirmPassword.isEmpty) {
-      Get.snackbar(
-        "Error",
-        "All fields are required!",
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      EasyLoading.showError('All fields are required!');
       return;
     }
 
     if (password != confirmPassword) {
-      Get.snackbar(
-        "Error",
-        "Passwords do not match!",
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      EasyLoading.showError('Passwords do not match!');
       return;
     }
 
@@ -79,30 +72,15 @@ class SignupScreen extends StatelessWidget {
       // ✅ Save login session
       await sessionService.saveLoginSession(userId: uid, email: email);
 
-      Get.snackbar(
-        "Success",
-        "Account created successfully!",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-      );
+      EasyLoading.showSuccess('Account created successfully!', duration: Duration(seconds: 1));
 
       // Go directly to HomeScreen after signup
       Get.offAll(() => HomeScreen(userName: name));
     } on FirebaseAuthException catch (e) {
       // Show structured auth error code and message
-      Get.snackbar(
-        "Signup Failed",
-        "${e.code}: ${e.message}",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-      );
+      EasyLoading.showError('${e.code}: ${e.message ?? 'Unknown error'}');
     } catch (e) {
-      Get.snackbar(
-        "Signup Failed",
-        e.toString(),
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-      );
+      EasyLoading.showError('Signup failed: ${e.toString().substring(0, 50)}');
     }
   }
 
