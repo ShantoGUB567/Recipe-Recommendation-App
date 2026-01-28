@@ -309,7 +309,7 @@ class _CommunityScreenState extends State<CommunityScreen>
                         const SizedBox(height: 8),
                         Text(
                           _searchQuery.isNotEmpty
-                              ? 'No results for "${_searchQuery}"'
+                              ? 'No results for "$_searchQuery"'
                               : 'Share your culinary story!',
                           style: TextStyle(
                             fontSize: 14,
