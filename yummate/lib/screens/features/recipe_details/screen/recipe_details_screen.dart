@@ -1,0 +1,441 @@
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:yummate/models/recipe_model.dart';
+import 'package:yummate/services/session_service.dart';
+import 'package:yummate/services/recipe_service.dart';
+import 'package:share_plus/share_plus.dart';
+import '../widgets/circular_button.dart';
+import '../widgets/ingredient_item.dart';
+import '../widgets/angled_clipper.dart';
+
+class RecipeDetailsScreen extends StatefulWidget {
+  final RecipeModel recipe;
+  const RecipeDetailsScreen({super.key, required this.recipe});
+
+  @override
+  State<RecipeDetailsScreen> createState() => _RecipeDetailsScreenState();
+}
+
+class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
+  bool isMetric = true;
+  final Set<int> checkedIngredients = {};
+  final SessionService _sessionService = SessionService();
+  final RecipeService _recipeService = RecipeService();
+  bool isSaved = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSessionData();
+    _checkSaveStatus();
+    // Save to recent recipes
+    _sessionService.saveRecentRecipe(widget.recipe);
+  }
+
+  Future<void> _checkSaveStatus() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        final saved = await _recipeService.isRecipeSaved(
+          userId: user.uid,
+          recipeName: widget.recipe.name,
+        );
+        setState(() {
+          isSaved = saved;
+        });
+      } catch (e) {
+        debugPrint('Error checking save status: $e');
+      }
+    }
+  }
+
+  Future<void> _loadSessionData() async {
+    // Load checked ingredients
+    final checked = await _sessionService.getCheckedIngredients(
+      widget.recipe.name,
+    );
+    setState(() {
+      checkedIngredients.addAll(checked);
+    });
+  }
+
+  Future<void> _toggleSaveRecipe() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      EasyLoading.showError('Please login to save recipes');
+      return;
+    }
+
+    EasyLoading.show(status: 'Processing...');
+
+    try {
+      if (isSaved) {
+        // Find the recipe ID and remove it
+        final savedRecipes = await _recipeService.getSavedRecipes(user.uid);
+        bool found = false;
+        for (var saved in savedRecipes) {
+          if (saved.recipe.name == widget.recipe.name) {
+            await _recipeService.removeSavedRecipe(
+              userId: user.uid,
+              recipeId: saved.id,
+            );
+            found = true;
+            break;
+          }
+        }
+        if (mounted) {
+          setState(() => isSaved = false);
+          EasyLoading.showSuccess(
+            found
+                ? 'Recipe removed from saved'
+                : 'Recipe not found in saved list',
+          );
+        }
+      } else {
+        // Ensure recipe has required fields
+        debugPrint('Saving recipe: ${widget.recipe.name}');
+        debugPrint('Recipe ID: ${widget.recipe.id}');
+        debugPrint('User ID: ${user.uid}');
+
+        await _recipeService.saveRecipe(
+          userId: user.uid,
+          recipe: widget.recipe,
+        );
+
+        // Verify it was saved by checking immediately
+        final savedRecipes = await _recipeService.getSavedRecipes(user.uid);
+        debugPrint('✅ Total saved recipes after save: ${savedRecipes.length}');
+        for (var saved in savedRecipes) {
+          debugPrint('   - ${saved.recipe.name} (ID: ${saved.id})');
+        }
+
+        if (mounted) {
+          setState(() => isSaved = true);
+          EasyLoading.showSuccess('Recipe saved successfully!');
+        }
+      }
+    } catch (e, stackTrace) {
+      debugPrint('Error toggling save: $e');
+      debugPrint('Stack trace: $stackTrace');
+      if (mounted) {
+        EasyLoading.showError('Failed to save recipe: ${e.toString()}');
+      }
+    }
+  }
+
+  Future<void> _saveCheckedIngredients() async {
+    await _sessionService.saveCheckedIngredients(
+      widget.recipe.name,
+      checkedIngredients,
+    );
+  }
+
+  void _shareRecipe() {
+    final ingredients = widget.recipe.ingredients.join('\n• ');
+    final instructions = widget.recipe.instructions
+        .asMap()
+        .entries
+        .map((e) => '${e.key + 1}. ${e.value}')
+        .join('\n');
+
+    Share.share(
+      '${widget.recipe.name}\n\n'
+      'Time: ${widget.recipe.preparationTime}\n'
+      'Servings: ${widget.recipe.servings}\n'
+      'Calories: ${widget.recipe.calories}\n\n'
+      'Ingredients:\n• $ingredients\n\n'
+      'Instructions:\n$instructions',
+      subject: widget.recipe.name,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey.shade50,
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFFF6B35),
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          widget.recipe.name,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // White Title Section
+            Container(
+              color: Colors.white,
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.recipe.name,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                      height: 1.3,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    widget.recipe.preparationTime,
+                    style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+                  ),
+                ],
+              ),
+            ),
+
+            // Icon Buttons Row
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  CircularButton(
+                    icon: isSaved ? Icons.bookmark : Icons.bookmark_border,
+                    label: isSaved ? 'Saved' : 'Save\nRecipe',
+                    color: const Color(0xFFFF6B35),
+                    onTap: _toggleSaveRecipe,
+                    isFilled: isSaved,
+                  ),
+                  CircularButton(
+                    icon: Icons.restaurant_menu,
+                    label: '${widget.recipe.servings}\nServings',
+                    color: const Color(0xFFFF8C42),
+                    onTap: () {},
+                  ),
+                  CircularButton(
+                    icon: Icons.share,
+                    label: 'Share\nrecipe',
+                    color: const Color(0xFF4CAF50),
+                    onTap: _shareRecipe,
+                  ),
+                  CircularButton(
+                    icon: Icons.print,
+                    label: 'Print\nRecipe',
+                    color: const Color(0xFF9C27B0),
+                    onTap: () {},
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            // Ingredients Header with angled design
+            Stack(
+              children: [
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
+                  decoration: const BoxDecoration(color: Color(0xFFFF6B35)),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.menu, color: Colors.white, size: 24),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'Ingredients Required',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        '${widget.recipe.ingredients.length}\nItems',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                          height: 1.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Angled shape
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  child: ClipPath(
+                    clipper: AngledClipper(),
+                    child: Container(width: 80, color: const Color(0xFFFF8C42)),
+                  ),
+                ),
+              ],
+            ),
+
+            // Ingredients List
+            Container(
+              color: Colors.white,
+              child: Column(
+                children: widget.recipe.ingredients.asMap().entries.map((
+                  entry,
+                ) {
+                  final index = entry.key;
+                  final ingredient = entry.value;
+                  final isChecked = checkedIngredients.contains(index);
+                  return IngredientItem(
+                    index: index,
+                    ingredient: ingredient,
+                    isChecked: isChecked,
+                    onToggle: () {
+                      setState(() {
+                        if (isChecked) {
+                          checkedIngredients.remove(index);
+                        } else {
+                          checkedIngredients.add(index);
+                        }
+                        _saveCheckedIngredients();
+                      });
+                    },
+                  );
+                }).toList(),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Directions Header with angled design
+            if (widget.recipe.instructions.isNotEmpty) ...[
+              Stack(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
+                    ),
+                    decoration: const BoxDecoration(color: Color(0xFFFF6B35)),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.double_arrow_rounded,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 12),
+                        const Text(
+                          'Directions to Prepare',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const Spacer(),
+                        Text(
+                          '${widget.recipe.instructions.length}\nSteps',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                            height: 1.2,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Angled shape
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    child: ClipPath(
+                      clipper: AngledClipper(),
+                      child: Container(
+                        width: 80,
+                        color: const Color(0xFFFF8C42),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              // Instructions List
+              Container(
+                color: Colors.white,
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: widget.recipe.instructions.asMap().entries.map((
+                    entry,
+                  ) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Step number circle
+                          Container(
+                            width: 32,
+                            height: 32,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFF6B35),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: Text(
+                                '${entry.key + 1}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          // Step instruction
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(
+                                entry.value,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.grey.shade800,
+                                  height: 1.6,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+              const SizedBox(height: 30),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
