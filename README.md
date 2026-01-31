@@ -25,23 +25,46 @@ It helps users cook smarter, reduce food waste, and plan meals efficiently.
 ---
 
 ## 📱 App Screenshots
-| Screen 1 | Screen 2 | Screen 3 |
 |---------|----------|----------|
 | ![Splash Screen](AppScreenshots/SplashScreen.jpeg) | ![Siginup Screen](AppScreenshots/Signup.jpeg) | ![Login Screen](AppScreenshots/Login.jpeg) |
+|---------|----------|----------|
+| ![Home Screen](AppScreenshots/Home.jpeg) | ![Input Image Screen](AppScreenshots/InputImage.jpeg) | ![Genereted Recipe.jpeg Screen](AppScreenshots/GeneretedRecipe.jpeg) |
+|---------|----------|----------|
+| ![Recipe Details Screen](AppScreenshots/RecipeDetails.jpeg) | ![App Drawer](AppScreenshots/Drawer.jpeg) | ![Community Screen](AppScreenshots/Community.jpeg) | 
+|---------|----------|----------|
+| ![Weekly Meal Planner Screen](AppScreenshots/WeeklyMealPlanner.jpeg) | ![Save Recipe Screen](AppScreenshots/SaveRecipe.jpeg) | ![Edit Profile Screen](AppScreenshots/EditProfile.jpeg)|
 
-![Community Screen](AppScreenshots/Community.jpeg)
-![App Drawer](AppScreenshots/Drawer.jpeg)
-![Edit Profile Screen](AppScreenshots/EditProfile.jpeg)
-![Genereted Recipe.jpeg Screen](AppScreenshots/GeneretedRecipe.jpeg)
-![Input Image Screen](AppScreenshots/InputImage.jpeg)
-![Personalization Profile](AppScreenshots/Personalization.jpeg)
-![Recipe Details Screen](AppScreenshots/RecipeDetails.jpeg)
-![Save Recipe Screen](AppScreenshots/SaveRecipe.jpeg)
-![Weekly Meal Planner Screen](AppScreenshots/WeeklyMealPlanner.jpeg)
+<!-- ![Personalization Profile](AppScreenshots/Personalization.jpeg) -->
 
 ---
 
-## 🛠️ Installation
-1. Clone the repository  
+## 🛠️ Installation & Setup 
+Follow the steps below to run the Yummate app locally on your machine.
+
+### ✅ Prerequisites
+Make sure you have the following installed:
+- Flutter SDK (latest stable version)
+- Dart SDK
+- Android Studio or VS Code
+- Android Emulator or Physical Device
+- Git (optional but recommended)
+
+1. Check Flutter installation:
+    ```bash
+    flutter --version
+2. Clone the repository  
    ```bash
    https://github.com/ShantoGUB567/Recipe-Recommendation-App.git
+3. Navigate into the project directory:
+    ```bash
+    cd yummate
+4. 
+5. 
+6. 
+7. 
+8. 
+9. 
+10. 
+
+
+
