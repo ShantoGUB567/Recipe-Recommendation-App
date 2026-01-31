@@ -95,8 +95,9 @@ class _WeeklyMealPlannerScreenState extends State<WeeklyMealPlannerScreen> {
       int targetCalories = 2000;
       if (_additionalInfo != null) {
         final goal = _additionalInfo!['primaryGoal'];
-        if (goal == 'Weight Loss') targetCalories = 1800;
-        else if (goal == 'Muscle Gain') targetCalories = 2400;
+        if (goal == 'Weight Loss') {
+          targetCalories = 1800;
+        } else if (goal == 'Muscle Gain') targetCalories = 2400;
       }
 
       final generatedPlans = await _mealPlannerService.generateWeeklyMealPlan(
