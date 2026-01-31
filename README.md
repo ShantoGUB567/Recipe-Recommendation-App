@@ -60,22 +60,22 @@ Make sure you have the following installed:
     ```bash
     cd yummate
 4. Install Dependencies 
-    - Fetch all required Flutter packages:
+- Fetch all required Flutter packages:
     ```bash
     flutter pub get
 5. Firebase Setup
-    - Create a Firebase project from the Firebase Console
-    - Enable Email & Password Authentication
-    - Download google-services.json
-    - Place it inside:
+- Create a Firebase project from the Firebase Console
+- Enable Email & Password Authentication
+- Download google-services.json
+- Place it inside:
     ```bash
     android/app/
 6. AI Configuration
-    - Set up Gemini AI API key
-    - Store the API key securely (e.g., environment variables or config file)
-    - Ensure backend services can access the AI endpoint
+- Set up Gemini AI API key
+- Store the API key securely (e.g., environment variables or config file)
+- Ensure backend services can access the AI endpoint
 7. Run the Application
-    - Make sure an emulator or physical device is connected, then run:
+- Make sure an emulator or physical device is connected, then run:
     ```bash
     flutter run
 8. Build APK (Optional)
