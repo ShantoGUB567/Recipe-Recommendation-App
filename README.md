@@ -27,9 +27,13 @@ It helps users cook smarter, reduce food waste, and plan meals efficiently.
 ## 📱 App Screenshots
 |---------|----------|----------|
 | ![Splash Screen](AppScreenshots/SplashScreen.jpeg) | ![Siginup Screen](AppScreenshots/Signup.jpeg) | ![Login Screen](AppScreenshots/Login.jpeg) |
+|---------|----------|----------|
 | ![Home Screen](AppScreenshots/Home.jpeg) | ![Input Image Screen](AppScreenshots/InputImage.jpeg) | ![Genereted Recipe.jpeg Screen](AppScreenshots/GeneretedRecipe.jpeg) |
+|---------|----------|----------|
 | ![Recipe Details Screen](AppScreenshots/RecipeDetails.jpeg) | ![App Drawer](AppScreenshots/Drawer.jpeg) | ![Community Screen](AppScreenshots/Community.jpeg) | 
+|---------|----------|----------|
 | ![Weekly Meal Planner Screen](AppScreenshots/WeeklyMealPlanner.jpeg) | ![Save Recipe Screen](AppScreenshots/SaveRecipe.jpeg) | ![Edit Profile Screen](AppScreenshots/EditProfile.jpeg)|
+|---------|----------|----------|
 
 <!-- ![Personalization Profile](AppScreenshots/Personalization.jpeg) -->
 
@@ -55,13 +59,34 @@ Make sure you have the following installed:
 3. Navigate into the project directory:
     ```bash
     cd yummate
-4. 
-5. 
-6. 
-7. 
-8. 
-9. 
-10. 
-
-
-
+4. Install Dependencies 
+    Fetch all required Flutter packages:
+    ```bash
+    flutter pub get
+5. Firebase Setup
+    Create a Firebase project from the Firebase Console
+    Enable Email & Password Authentication
+    Download google-services.json
+    Place it inside:
+    ```bash
+    android/app/
+6. AI Configuration
+    Set up Gemini AI API key
+    Store the API key securely (e.g., environment variables or config file)
+    Ensure backend services can access the AI endpoint
+7. Run the Application
+    Make sure an emulator or physical device is connected, then run:
+    ```bash
+    flutter run
+8. Build APK (Optional)
+    To generate a release APK:
+    ```bash
+    flutter build apk
+    The APK will be available inside:
+    'build/app/outputs/flutter-apk/'
+9. Troubleshooting
+    If you face issues, try:
+    ```bash
+    flutter clean
+    flutter pub get
+    flutter run
