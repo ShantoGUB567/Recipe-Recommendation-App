@@ -27,9 +27,7 @@ It helps users cook smarter, reduce food waste, and plan meals efficiently.
 ## 📱 App Screenshots
 | Screen 1 | Screen 2 | Screen 3 |
 |---------|----------|----------|
-| ![Splash Screen](AppScreenshots/SplashScreen.jpeg) |
-| ![Siginup Screen](AppScreenshots/Signup.jpeg) |
-| ![Login Screen](AppScreenshots/Login.jpeg) |
+| ![Splash Screen](AppScreenshots/SplashScreen.jpeg) | ![Siginup Screen](AppScreenshots/Signup.jpeg) | ![Login Screen](AppScreenshots/Login.jpeg) |
 
 ![Community Screen](AppScreenshots/Community.jpeg)
 ![App Drawer](AppScreenshots/Drawer.jpeg)
